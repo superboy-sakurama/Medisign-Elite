@@ -296,12 +296,10 @@ export default function FormSurat() {
       
       // 3. Insert surat_keterangan
       const suratData = { 
-         jenis_surat: currentSuratType, 
+         jenis_surat: currentSuratType.toUpperCase(), 
          pasien_id: patientId, 
          data_klinis: dataKlinis, 
-         nomor_surat: nomor_surat_full, 
-         no_urut: no_urut, 
-         nomor_surat_full: nomor_surat_full,
+         nomor_surat: nomor_surat_full
          // We do not have login sessions hooked up fully to get tenaga_medis id,
          // for now we lookup dr. R.M. Ustadho if possible, or null
       };
@@ -316,7 +314,7 @@ export default function FormSurat() {
       
       if (sError) {
          console.error('Error inserting surat:', sError);
-         throw new Error('Gagal menyimpan surat keterangan ke database.');
+         throw new Error(`Gagal menyimpan surat keterangan ke database: ${sError.message}`);
       }
 
       // 4. Generate PDF internally for printing

@@ -59,3 +59,17 @@ CREATE TABLE surat_keterangan (
 
 -- Buat indeks untuk performa pencarian JSONB
 CREATE INDEX idx_surat_keterangan_data_klinis ON surat_keterangan USING GIN (data_klinis);
+
+-- 4. Kofigurasi Row-Level Security (RLS)
+-- Mengizinkan akses publik untuk operasi CRUD karena belum menggunakan JWT/Supabase Auth penuh
+ALTER TABLE pasien ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all on pasien" ON pasien;
+CREATE POLICY "Allow all on pasien" ON pasien FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE tenaga_medis ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all on tenaga_medis" ON tenaga_medis;
+CREATE POLICY "Allow all on tenaga_medis" ON tenaga_medis FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE surat_keterangan ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all on surat_keterangan" ON surat_keterangan;
+CREATE POLICY "Allow all on surat_keterangan" ON surat_keterangan FOR ALL USING (true) WITH CHECK (true);
