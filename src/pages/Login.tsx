@@ -18,7 +18,7 @@ export default function Login() {
     setError('');
 
     // Whitelist Email Petugas/Admin (simulasi security level frontend sementara)
-    const allowedEmails = ['admin@medisign.com', 'mbaksintia@puskesmas.com', 'petugas@puskesmas.com'];
+    const allowedEmails = ['admin@medisign.com', 'ady.alfinady@gmail.com', 'petugas@puskesmas.com'];
 
     setTimeout(() => {
       if (!allowedEmails.includes(email.toLowerCase())) {
@@ -52,7 +52,7 @@ export default function Login() {
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="mbaksintia@puskesmas.com" 
+                placeholder="mbakdana@puskesmas.com" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required 
@@ -72,7 +72,7 @@ export default function Login() {
             </div>
             
             <p className="text-[10px] text-slate-400 text-center">
-              *Hanya email yang telah didaftarkan (contoh: mbaksintia@puskesmas.com) yang dapat mengakses sistem ini.
+              *Hanya email yang telah didaftarkan (contoh: mbakdana@puskesmas.com) yang dapat mengakses sistem ini.
             </p>
 
             <button 

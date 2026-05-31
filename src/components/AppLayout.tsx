@@ -61,8 +61,8 @@ export default function AppLayout() {
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-white shrink-0">SN</div>
             <div className="overflow-hidden flex-1">
-              <p className="text-xs font-semibold text-white truncate">Mbak Sintia</p>
-              <p className="text-[10px] text-slate-500 truncate mt-0.5">Petugas Pendaftaran</p>
+              <p className="text-xs font-semibold text-white truncate">Alfina Damayanti</p>
+              <p className="text-[10px] text-slate-500 truncate mt-0.5">Operator Pelayanan</p>
             </div>
             <button className="text-slate-500 hover:text-white ml-auto" onClick={() => navigate('/login')} title="Logout">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>

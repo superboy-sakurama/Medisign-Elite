@@ -43,7 +43,7 @@ export default function FormSurat() {
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Keperluan</Label>
-                  <Input name="keperluan" placeholder="Perpanjangan SIPP 1..." onChange={handleClinicalChange} />
+                  <Input name="keperluan" placeholder="Melamar kerja..." onChange={handleClinicalChange} />
                 </div>
                 <div className="space-y-2">
                   <Label>Kesimpulan</Label>
@@ -77,7 +77,7 @@ export default function FormSurat() {
                 <textarea 
                   name="terapy" 
                   className="flex min-h-[120px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                  placeholder="Ambroxol 3x1&#10;Flutamol 3x1&#10;Dexa 3x1" 
+                  placeholder="Ambroxol 3x1&#10;Amoxicillin 3x1&#10;Dexa 3x1" 
                   onChange={handleClinicalChange as any} 
                 />
              </div>
