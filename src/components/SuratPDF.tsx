@@ -160,35 +160,6 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
               {'\n'}Surat Keterangan ini akan dipergunakan sebagai persyaratan untuk <Text style={{fontWeight: 'bold'}}>{dataKlinis.keperluan || '...'}</Text>
             </Text>
             <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat dipergunakan seperlunya.</Text>
-            
-            <View style={{ marginTop: 10 }}>
-              <Text>Keterangan :</Text>
-              <View style={{...styles.contentRow, marginTop: 5}}>
-                <Text style={{width: 80}}>Tinggi badan</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.tinggi_badan || '-'}</Text><Text style={{marginLeft: 10}}>cm</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 80}}>Berat badan</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.berat_badan || '-'}</Text><Text style={{marginLeft: 10}}>kg</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 80}}>Tensi</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.tensi || '-'}</Text><Text style={{marginLeft: 10}}>mm/Hg</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 80}}>Suhu</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.suhu || '-'}</Text><Text style={{marginLeft: 10}}>°C</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 80}}>Nadi</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.nadi || '-'}</Text><Text style={{marginLeft: 10}}>x/menit</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 80}}>GDA</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.gda || '-'}</Text><Text style={{marginLeft: 10}}>mg/dl</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 80}}>Chol</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.chol || '-'}</Text><Text style={{marginLeft: 10}}>mg/dl</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 80}}>Trigliserida</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.trigliserida || '-'}</Text><Text style={{marginLeft: 10}}>mg/dl</Text>
-              </View>
-              <Text style={{fontSize: 10, fontStyle: 'italic', marginTop: 5}}>Keterangan : (*) Coret yang tidak perlu</Text>
-            </View>
           </View>
         )}
 
@@ -299,13 +270,47 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
           </View>
         )}
 
-        {/* TANDA TANGAN & QR */}
+        {/* TANDA TANGAN & QR & KETERANGAN */}
         <View style={styles.signatureSection}>
-          <View style={{ width: 150 }}>
-             {/* QR Code Verification */}
-             <Text style={{fontSize: 8, marginBottom: 4}}>Scan untuk verifikasi keaslian dokumen:</Text>
-             <Image src={qrCodeImg} style={styles.qrContainer} />
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            {suratType === 'SKD' && (
+              <View style={{ flex: 1 }}>
+                <Text>Keterangan :</Text>
+                <View style={{...styles.contentRow, marginTop: 5}}>
+                  <Text style={{width: 60}}>Tinggi badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.tinggi_badan || '-'}</Text><Text style={{marginLeft: 5}}>cm</Text>
+                </View>
+                <View style={styles.contentRow}>
+                  <Text style={{width: 60}}>Berat badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.berat_badan || '-'}</Text><Text style={{marginLeft: 5}}>kg</Text>
+                </View>
+                <View style={styles.contentRow}>
+                  <Text style={{width: 60}}>Tensi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.tensi || '-'}</Text><Text style={{marginLeft: 5}}>mm/Hg</Text>
+                </View>
+                <View style={styles.contentRow}>
+                  <Text style={{width: 60}}>Suhu</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.suhu || '-'}</Text><Text style={{marginLeft: 5}}>°C</Text>
+                </View>
+                <View style={styles.contentRow}>
+                  <Text style={{width: 60}}>Nadi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.nadi || '-'}</Text><Text style={{marginLeft: 5}}>x/menit</Text>
+                </View>
+                <View style={styles.contentRow}>
+                  <Text style={{width: 60}}>GDA</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.gda || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
+                </View>
+                <View style={styles.contentRow}>
+                  <Text style={{width: 60}}>Chol</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.chol || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
+                </View>
+                <View style={styles.contentRow}>
+                  <Text style={{width: 60}}>Trigliserida</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.trigliserida || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
+                </View>
+                <Text style={{fontSize: 9, fontStyle: 'italic', marginTop: 5}}>Keterangan: (*) Coret yang tidak perlu</Text>
+              </View>
+            )}
+            
+            <View style={{ width: 100, marginLeft: suratType === 'SKD' ? 10 : 0 }}>
+               {/* QR Code Verification */}
+               <Text style={{fontSize: 8, marginBottom: 4}}>Scan untuk verifikasi keaslian dokumen:</Text>
+               <Image src={qrCodeImg} style={styles.qrContainer} />
+            </View>
           </View>
+
           <View style={styles.signatureBlock}>
             <Text>Kalitengah, {new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})}</Text>
             <Text>{suratType === 'SKV' ? 'Kepala Puskesmas Kalitengah' : 'Dokter Pemeriksa,'}</Text>

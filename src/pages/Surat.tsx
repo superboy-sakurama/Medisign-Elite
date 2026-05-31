@@ -271,10 +271,7 @@ export default function FormSurat() {
 
     setIsSaving(true);
     try {
-      // 1. Generate Nomor Surat
-      const { no_urut, nomor_surat_full } = await generateNomorSurat(currentSuratType);
-      
-      // 2. In a real app we'd upsert patient data to supabase here if it's new
+      // 1. In a real app we'd upsert patient data to supabase here if it's new
       let patientId = patient.id;
       
       const patientPayload = {
@@ -319,9 +316,26 @@ export default function FormSurat() {
            patientId = pData.id;
         }
       }
-      
+
+      // Check for duplicates on the same day if creating a new surat
+      if (!editingSuratId && patientId) {
+         const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+         const { data: existingSurat } = await supabase
+            .from('surat_keterangan')
+            .select('id, tanggal_terbit')
+            .eq('pasien_id', patientId)
+            .eq('jenis_surat', currentSuratType.toUpperCase())
+            .gte('tanggal_terbit', `${today}T00:00:00Z`)
+            .lte('tanggal_terbit', `${today}T23:59:59Z`)
+            .maybeSingle();
+
+         if (existingSurat) {
+            throw new Error(`Pasien ini sudah dibuatkan ${currentSuratType} pada hari ini. Jika ada kesalahan, silakan gunakan riwayat untuk 'Edit Data'.`);
+         }
+      }
+
       let sData, sError;
-      let finalNomorSurat = nomor_surat_full;
+      let finalNomorSurat = '';
       
       if (editingSuratId) {
         // If editing, only update specific fields, do not change nomor surat or terbit
@@ -332,14 +346,19 @@ export default function FormSurat() {
            .single();
         sData = data;
         sError = error;
-        finalNomorSurat = sData?.nomor_surat || finalNomorSurat;
+        finalNomorSurat = sData?.nomor_surat;
       } else {
+        // 2. Generate Nomor Surat
+        const { no_urut, nomor_surat_full } = await generateNomorSurat(currentSuratType);
+        finalNomorSurat = nomor_surat_full;
+
         // 3. Insert surat_keterangan
         const suratData = { 
            jenis_surat: currentSuratType.toUpperCase(), 
            pasien_id: patientId, 
            data_klinis: dataKlinis, 
-           nomor_surat: nomor_surat_full
+           nomor_surat: finalNomorSurat,
+           no_urut: no_urut
            // We do not have login sessions hooked up fully to get tenaga_medis id,
            // for now we lookup dr. R.M. Ustadho if possible, or null
         };
