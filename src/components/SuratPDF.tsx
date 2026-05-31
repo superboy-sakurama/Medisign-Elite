@@ -61,8 +61,8 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
             <Text style={styles.headerTitle}>PEMERINTAH KABUPATEN LAMONGAN</Text>
             <Text style={styles.headerTitle}>DINAS KESEHATAN</Text>
             <Text style={styles.headerSubtitle}>PUSKESMAS KALITENGAH</Text>
-            <Text style={styles.headerAddress}>Jl. Raya Kalitengah No. 12, Kec. Kalitengah, Kab. Lamongan</Text>
-            <Text style={styles.headerAddress}>Email: pkmkalitengah@lamongankab.go.id</Text>
+            <Text style={styles.headerAddress}>Jl. Mahkota No. 100 Desa Dibee Kalitengah Lamongan Telp. 0322-391971</Text>
+            <Text style={styles.headerAddress}>Email: puskes.kalitengah@gmail.com Web : https://lamongankab.go.id/puskesmas-kalitengah</Text>
           </View>
 
           {/* Logo Kanan */}
@@ -80,37 +80,204 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
            suratType === 'SKI' ? 'SURAT KETERANGAN ISTIRAHAT' : 
            suratType === 'SKBN' ? 'SURAT KETERANGAN BEBAS NARKOBA' : 
            suratType === 'SKB' ? 'SURAT KETERANGAN BEROBAT' :
+           suratType === 'CATIN' ? 'SURAT KETERANGAN CALON PENGANTIN' :
            suratType === 'SKH' ? 'SURAT KETERANGAN HAMIL' :
-           suratType === 'SKSH' ? 'SURAT KETERANGAN SEHAT HAJI' :
-           suratType === 'SKV' ? 'SURAT KETERANGAN VAKSIN' :
+           suratType === 'SKSH' ? 'SURAT KETERANGAN CALON JAMAAH HAJI' :
+           suratType === 'SKV' ? 'SURAT KETERANGAN VAKSINASI' :
            `SURAT KETERANGAN ${suratType}`}
         </Text>
-        <Text style={styles.suratNumber}>Nomor: {nomorSuratFull}</Text>
+        <Text style={styles.suratNumber}>Nomor : {nomorSuratFull}</Text>
 
-        <Text style={{ marginBottom: 10 }}>Yang bertanda tangan di bawah ini menerangkan bahwa:</Text>
+        <Text style={{ marginBottom: 10 }}>Yang bertanda tangan di bawah ini dokter Pemeriksa Puskesmas Kalitengah, menerangkan bahwa :</Text>
         
         {/* IDENTITAS */}
-        <View style={styles.contentRow}>
-          <Text style={styles.label}>Nama Lengkap</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.nama}</Text>
-        </View>
-        <View style={styles.contentRow}>
-          <Text style={styles.label}>Umur / Tgl Lahir</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.tanggal_lahir}</Text>
-        </View>
-        <View style={styles.contentRow}>
-          <Text style={styles.label}>Pekerjaan</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.pekerjaan}</Text>
-        </View>
-        <View style={styles.contentRow}>
-          <Text style={styles.label}>Alamat</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.alamat}</Text>
+        <View style={{ marginLeft: 20, marginBottom: 15 }}>
+          <View style={styles.contentRow}>
+            <Text style={styles.label}>Nama</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.nama}</Text>
+          </View>
+          {suratType === 'SKSH' && (
+            <View style={styles.contentRow}>
+              <Text style={styles.label}>Bin/ Binti</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{dataKlinis.bin_binti || '-'}</Text>
+            </View>
+          )}
+          {suratType === 'SKV' ? (
+            <View style={styles.contentRow}>
+              <Text style={styles.label}>NIK</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.nik}</Text>
+            </View>
+          ) : null}
+          <View style={styles.contentRow}>
+            <Text style={styles.label}>{suratType === 'SKSH' ? 'Tempat, Tgl Lahir' : suratType === 'SKV' ? 'Tanggal Lahir' : 'Umur'}</Text><Text style={styles.colon}>:</Text>
+            <Text style={styles.value}>
+               {suratType === 'SKSH' ? `${patient.tempat_lahir}, ${patient.tanggal_lahir}` : 
+                suratType === 'SKV' ? patient.tanggal_lahir :
+                /* Simulate Age calculation roughly for other forms */
+                patient.tanggal_lahir ? `${new Date().getFullYear() - new Date(patient.tanggal_lahir).getFullYear()} tahun` : '-'}
+            </Text>
+          </View>
+          {suratType !== 'SKV' && (
+            <View style={styles.contentRow}>
+              <Text style={styles.label}>Jenis Kelamin</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.jenis_kelamin || 'Laki-laki'}</Text>
+            </View>
+          )}
+          {suratType === 'SKSH' && (
+            <>
+              <View style={styles.contentRow}>
+                <Text style={styles.label}>Agama</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.agama}</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={styles.label}>Tinggi Badan</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{dataKlinis.tinggi_badan || '-'} cm</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={styles.label}>Berat Badan</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{dataKlinis.berat_badan || '-'} kg</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={styles.label}>Tekanan Darah</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{dataKlinis.tensi || '-'} mm/Hg</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={styles.label}>Golongan Darah</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.golongan_darah || '-'}</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={styles.label}>Riwayat Penyakit</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{dataKlinis.riwayat_penyakit || '-'}</Text>
+              </View>
+            </>
+          )}
+          {suratType === 'SKV' && (
+            <View style={styles.contentRow}>
+              <Text style={styles.label}>No. Handphone</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.no_hp || '-'}</Text>
+            </View>
+          )}
+          <View style={styles.contentRow}>
+            <Text style={styles.label}>Pekerjaan</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.pekerjaan}</Text>
+          </View>
+          <View style={styles.contentRow}>
+            <Text style={styles.label}>Alamat</Text><Text style={styles.colon}>:</Text><Text style={styles.value}>{patient.alamat}</Text>
+          </View>
         </View>
 
         {/* DATA KLINIS SPESIFIK */}
+        {suratType === 'SKD' && (
+          <View>
+            <Text style={styles.paragraph}>
+              bahwa pada pemeriksaan kesehatan saat ini, orang tersebut dalam keadaan <Text style={{fontWeight: 'bold'}}>SEHAT / <Text style={{textDecoration: 'line-through'}}>TIDAK SEHAT</Text> (*)</Text>.
+              {'\n'}Surat Keterangan ini akan dipergunakan sebagai persyaratan untuk <Text style={{fontWeight: 'bold'}}>{dataKlinis.keperluan || '...'}</Text>
+            </Text>
+            <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat dipergunakan seperlunya.</Text>
+            
+            <View style={{ marginTop: 10 }}>
+              <Text>Keterangan :</Text>
+              <View style={{...styles.contentRow, marginTop: 5}}>
+                <Text style={{width: 80}}>Tinggi badan</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.tinggi_badan || '-'}</Text><Text style={{marginLeft: 10}}>cm</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>Berat badan</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.berat_badan || '-'}</Text><Text style={{marginLeft: 10}}>kg</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>Tensi</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.tensi || '-'}</Text><Text style={{marginLeft: 10}}>mm/Hg</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>Suhu</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.suhu || '-'}</Text><Text style={{marginLeft: 10}}>°C</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>Nadi</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.nadi || '-'}</Text><Text style={{marginLeft: 10}}>x/menit</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>GDA</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.gda || '-'}</Text><Text style={{marginLeft: 10}}>mg/dl</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>Chol</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.chol || '-'}</Text><Text style={{marginLeft: 10}}>mg/dl</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>Trigliserida</Text><Text style={{width: 10}}>:</Text><Text style={{width: 40, textAlign: 'right'}}>{dataKlinis.trigliserida || '-'}</Text><Text style={{marginLeft: 10}}>mg/dl</Text>
+              </View>
+              <Text style={{fontSize: 10, fontStyle: 'italic', marginTop: 5}}>Keterangan : (*) Coret yang tidak perlu</Text>
+            </View>
+          </View>
+        )}
+
+        {suratType === 'SKB' && (
+          <View>
+            <Text style={styles.paragraph}>
+              Pada tanggal {new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})} yang bersangkutan <Text style={{fontWeight: 'bold'}}>TELAH BEROBAT</Text> di Puskesmas Kalitengah.
+            </Text>
+            <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat dipergunakan seperlunya.</Text>
+            
+            <View style={{ marginTop: 20 }}>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>Diagnosa</Text><Text style={{width: 10}}>:</Text>
+                <Text style={{fontWeight: 'bold'}}>{dataKlinis.diagnosa || '-'}</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 80}}>Terapy</Text><Text style={{width: 10}}>:</Text>
+                <Text style={{fontWeight: 'bold', flex: 1}}>{dataKlinis.terapy?.replace(/\n/g, '\n  ') || '-'}</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+         {suratType === 'SKH' && (
+          <View>
+            <Text style={styles.paragraph}>
+              Bahwa nama yang tersebut diatas saat ini sedang Hamil dengan usia kehamilan {dataKlinis.usia_kehamilan || '...'} minggu.
+            </Text>
+            <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat dipergunakan seperlunya.</Text>
+          </View>
+        )}
+
+        {suratType === 'SKSH' && (
+          <View>
+            <Text style={styles.paragraph}>
+              Setelah diperiksa kesehatannya dengan teliti saat ini, orang tersebut dalam keadaan berbadan <Text style={{fontWeight: 'bold'}}>{dataKlinis.kesimpulan || 'SEHAT (BAIK)'}</Text>. Surat Keterangan ini diberikan sehubungan dengan maksud untuk : {'\n'}
+              <Text style={{fontWeight: 'bold'}}>“{dataKlinis.keperluan || 'Melengkapi Persyaratan Administrasi Mendaftar Haji'}”</Text>.
+            </Text>
+            <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat digunakan seperlunya.</Text>
+          </View>
+        )}
+
+         {suratType === 'SKV' && (
+          <View>
+            <Text style={styles.paragraph}>
+              Yang bersangkutan <Text style={{fontWeight: 'bold'}}>SUDAH</Text> melakukan vaksinasi akan tetapi ada kendala pada aplikasi SATU SEHAT sehingga sertifikat belum muncul berikut tanggal vaksinasi :
+            </Text>
+            
+            <View style={{ display: 'flex', flexDirection: 'column', border: '1 solid #000', marginTop: 10, marginBottom: 10 }}>
+               <View style={{ display: 'flex', flexDirection: 'row', borderBottom: '1 solid #000', padding: 5 }}>
+                 <Text style={{ flex: 1, textAlign: 'center' }}>Dosis</Text>
+                 <Text style={{ flex: 2, textAlign: 'center', borderLeft: '1 solid #000', borderRight: '1 solid #000' }}>Tanggal Vaksin</Text>
+                 <Text style={{ flex: 2, textAlign: 'center' }}>No. Batch Vaksin</Text>
+               </View>
+               {[1, 2, 3].map((dosis) => (
+                  <View key={dosis} style={{ display: 'flex', flexDirection: 'row', padding: 5, borderBottom: dosis === 3 ? 'none' : '1 solid #000' }}>
+                    <Text style={{ flex: 1, textAlign: 'center' }}>Dosis {dosis === 1 ? 'I' : dosis === 2 ? 'II' : 'III'}</Text>
+                    <Text style={{ flex: 2, textAlign: 'center', borderLeft: '1 solid #000', borderRight: '1 solid #000', fontWeight: 'bold' }}>
+                      {dataKlinis[`tgl_vaksin_${dosis}`] ? new Date(dataKlinis[`tgl_vaksin_${dosis}`]).toLocaleDateString('id-ID') : ''}
+                    </Text>
+                    <Text style={{ flex: 2, textAlign: 'center', fontWeight: 'bold' }}>{dataKlinis[`no_batch_${dosis}`] || ''}</Text>
+                  </View>
+               ))}
+            </View>
+
+            <Text style={styles.paragraph}>Surat Keterangan ini bukan sertifikat Vaksin ataupun sebagai pengganti sertifikat vaksin.</Text>
+            <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat dengan sesungguhnya dan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya sampai dengan Etiket vaksin muncul di aplikasi Satu Sehat.</Text>
+          </View>
+        )}
+
         {suratType === 'SKI' && (
           <View>
             <Text style={styles.paragraph}>
-              Berdasarkan hasil pemeriksaan medis, pasien tersebut didiagnosa mengalami {dataKlinis.diagnosa || '...'}. 
-              Oleh karena itu, yang bersangkutan memerlukan istirahat selama {dataKlinis.lama_hari || '...'} hari, 
-              terhitung mulai tanggal {dataKlinis.tgl_mulai || '...'} sampai dengan {dataKlinis.tgl_selesai || '...'}.
+              Berdasarkan hasil pemeriksaan medis, pasien tersebut didiagnosa mengalami <Text style={{fontWeight: 'bold'}}>{dataKlinis.diagnosa || '...'}</Text>. 
+              Oleh karena itu, yang bersangkutan memerlukan istirahat selama <Text style={{fontWeight: 'bold'}}>{dataKlinis.lama_hari || '...'}</Text> hari, 
+              terhitung mulai tanggal <Text style={{fontWeight: 'bold'}}>{dataKlinis.tgl_mulai ? new Date(dataKlinis.tgl_mulai).toLocaleDateString('id-ID') : '...'}</Text> sampai dengan <Text style={{fontWeight: 'bold'}}>{dataKlinis.tgl_selesai ? new Date(dataKlinis.tgl_selesai).toLocaleDateString('id-ID') : '...'}</Text>.
             </Text>
+             <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat dipergunakan seperlunya.</Text>
+          </View>
+        )}
+        
+        {suratType === 'CATIN' && (
+           <View>
+            <Text style={styles.paragraph}>
+              Berdasarkan hasil pemeriksaan medis, pasien tersebut diderangkan: <Text style={{fontWeight: 'bold'}}>{dataKlinis.kesimpulan || '...'}</Text>.
+            </Text>
+             <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat dipergunakan seperlunya.</Text>
           </View>
         )}
 
@@ -130,23 +297,23 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
             <Text style={styles.paragraph}>
               Surat ini dipergunakan untuk: {dataKlinis.keperluan}
             </Text>
+            <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya.</Text>
           </View>
         )}
 
-        <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya.</Text>
-
         {/* TANDA TANGAN & QR */}
-        <View style={styles.signatureSection}>
-          <View>
+        <View style={{...styles.signatureSection, marginTop: suratType === 'SKB' ? -80 : (suratType === 'SKD' ? -80 : 40)}}>
+          <View style={{ width: 150 }}>
              {/* QR Code Verification */}
              <Text style={{fontSize: 8, marginBottom: 4}}>Scan untuk verifikasi keaslian dokumen:</Text>
              <Image src={qrCodeImg} style={styles.qrContainer} />
           </View>
           <View style={styles.signatureBlock}>
-            <Text>Kalitengah, {new Date().toLocaleDateString('id-ID')}</Text>
-            <Text>Dokter Pemeriksa,</Text>
+            <Text>Kalitengah, {new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})}</Text>
+            <Text>{suratType === 'SKV' ? 'Kepala Puskesmas Kalitengah' : 'Dokter Pemeriksa,'}</Text>
             <Text style={styles.signatureName}>dr. R.M. Ustadho</Text>
-            <Text style={styles.signatureNip}>NIP. 198502022010021002</Text>
+            <Text style={styles.signatureNip}>NIP. 19820506 201412 1 001</Text>
+            <Text style={{ marginTop: 2 }}>No SIP-DU1028/SIP.DU/413.111/V/2022</Text>
           </View>
         </View>
 

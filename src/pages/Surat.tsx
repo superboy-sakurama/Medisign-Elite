@@ -36,6 +36,117 @@ export default function FormSurat() {
 
   const renderDiagnosticForm = () => {
     switch (currentSuratType) {
+      case 'SKD':
+        return (
+          <div className="space-y-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Keperluan</Label>
+                  <Input name="keperluan" placeholder="Perpanjangan SIPP 1..." onChange={handleClinicalChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Kesimpulan</Label>
+                  <select name="kesimpulan" onChange={handleClinicalChange as any} className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <option value="SEHAT">SEHAT</option>
+                    <option value="TIDAK SEHAT">TIDAK SEHAT</option>
+                  </select>
+                </div>
+             </div>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div className="space-y-2"><Label>Tinggi (cm)</Label><Input type="number" name="tinggi_badan" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Berat (kg)</Label><Input type="number" name="berat_badan" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Tensi (mmHg)</Label><Input name="tensi" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Suhu (°C)</Label><Input name="suhu" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Nadi (x/mnt)</Label><Input name="nadi" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>GDA (mg/dl)</Label><Input name="gda" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Chol (mg/dl)</Label><Input name="chol" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Trigliserida</Label><Input name="trigliserida" onChange={handleClinicalChange} /></div>
+             </div>
+          </div>
+        );
+      case 'SKB':
+        return (
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label>Diagnosa</Label>
+                <Input name="diagnosa" placeholder="ISPA..." onChange={handleClinicalChange} />
+             </div>
+             <div className="space-y-2">
+                <Label>Terapy</Label>
+                <textarea 
+                  name="terapy" 
+                  className="flex min-h-[120px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  placeholder="Ambroxol 3x1&#10;Flutamol 3x1&#10;Dexa 3x1" 
+                  onChange={handleClinicalChange as any} 
+                />
+             </div>
+          </div>
+        );
+      case 'SKH':
+        return (
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label>Usia Kehamilan (minggu)</Label>
+                <Input type="number" name="usia_kehamilan" placeholder="24" onChange={handleClinicalChange} />
+             </div>
+          </div>
+        );
+      case 'SKSH':
+        return (
+          <div className="space-y-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2"><Label>Bin / Binti</Label><Input name="bin_binti" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Agama</Label><Input name="agama" value={patient?.agama || ''} onChange={(e) => setPatient(prev => ({...prev, agama: e.target.value} as any))} /></div>
+             </div>
+             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                <div className="space-y-2"><Label>Tinggi (cm)</Label><Input type="number" name="tinggi_badan" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Berat (kg)</Label><Input type="number" name="berat_badan" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Tekanan Darah</Label><Input name="tensi" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Gol. Darah</Label><Input name="golongan_darah" value={patient?.golongan_darah || ''} onChange={(e) => setPatient(prev => ({...prev, golongan_darah: e.target.value} as any))} /></div>
+             </div>
+             <div className="space-y-2 mt-4">
+                <Label>Riwayat Penyakit</Label>
+                <Input name="riwayat_penyakit" placeholder="-" onChange={handleClinicalChange} />
+             </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="space-y-2">
+                  <Label>Kesimpulan</Label>
+                  <Input name="kesimpulan" placeholder="SEHAT (BAIK)" defaultValue="SEHAT (BAIK)" onChange={handleClinicalChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Keperluan</Label>
+                  <Input name="keperluan" placeholder="Melengkapi Persyaratan Administrasi Mendaftar Haji" defaultValue="Melengkapi Persyaratan Administrasi Mendaftar Haji" onChange={handleClinicalChange} />
+                </div>
+             </div>
+          </div>
+        );
+      case 'SKV':
+        return (
+          <div className="space-y-4">
+             <Label className="text-base font-semibold mb-3 block border-b pb-2">Riwayat Vaksinasi (Satu Sehat)</Label>
+             {[1, 2, 3].map((dosis) => (
+                <div key={dosis} className="grid grid-cols-3 gap-4 mb-2">
+                   <div className="space-y-2"><Label>Dosis {dosis} - Tanggal</Label><Input type="date" name={`tgl_vaksin_${dosis}`} onChange={handleClinicalChange} /></div>
+                   <div className="space-y-2 col-span-2"><Label>Dosis {dosis} - No. Batch</Label><Input name={`no_batch_${dosis}`} onChange={handleClinicalChange} /></div>
+                </div>
+             ))}
+          </div>
+        );
+      case 'CATIN':
+        return (
+          <div className="space-y-4">
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="space-y-2"><Label>Tinggi Badan (cm)</Label><Input type="number" name="tinggi_badan" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Berat Badan (kg)</Label><Input type="number" name="berat_badan" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Tensi (mmHg)</Label><Input name="tensi" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Suhu (°C)</Label><Input name="suhu" onChange={handleClinicalChange} /></div>
+             </div>
+             <div className="space-y-2 mt-4">
+               <Label>Kesimpulan Pemeriksaan</Label>
+               <Input name="kesimpulan" placeholder="Dalam keadaan SEHAT untuk melangsungkan pernikahan" onChange={handleClinicalChange} />
+             </div>
+          </div>
+        );
       case 'SKI':
         return (
           <div className="space-y-4">
