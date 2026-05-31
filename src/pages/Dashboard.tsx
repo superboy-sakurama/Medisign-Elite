@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Users, FileCheck, Stethoscope } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { supabase } from '@/lib/supabase';
 
 const suratTypes = [
   { id: 'skd', label: 'Surat Keterangan Dokter (SKD)', desc: 'Surat keterangan sehat standar.', icon: '📄' },
@@ -19,6 +20,38 @@ const suratTypes = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({ totalPasien: 0, totalSurat: 0, skbn: 0, validasi: 0 });
+  
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const { count: countPasien } = await supabase.from('pasien').select('*', { count: 'exact', head: true });
+        const { count: countSurat } = await supabase.from('surat_keterangan').select('*', { count: 'exact', head: true });
+        
+        const currentMonthStart = new Date();
+        currentMonthStart.setDate(1);
+        
+        const { count: countSuratBulanIni } = await supabase.from('surat_keterangan')
+          .select('*', { count: 'exact', head: true })
+          .gte('tanggal_terbit', currentMonthStart.toISOString());
+          
+        const { count: countSKBN } = await supabase.from('surat_keterangan')
+          .select('*', { count: 'exact', head: true })
+          .eq('jenis_surat', 'SKBN');
+
+        setStats({
+          totalPasien: countPasien || 0,
+          totalSurat: countSuratBulanIni || 0,
+          skbn: countSKBN || 0,
+          validasi: countSurat || 0
+        });
+      } catch (err) {
+        console.error('Error fetching stats', err);
+      }
+    }
+    
+    fetchStats();
+  }, []);
 
   return (
     <>
@@ -37,24 +70,24 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Pasien</p>
-            <p className="text-2xl font-black text-slate-800">1,245</p>
-            <p className="text-[10px] text-emerald-500 mt-1 font-bold">↑ 12% dari bulan lalu</p>
+            <p className="text-2xl font-black text-slate-800">{stats.totalPasien.toLocaleString('id-ID')}</p>
+            <p className="text-[10px] text-emerald-500 mt-1 font-bold">Terdata di sistem</p>
           </div>
           <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Surat Terbit (Bulan Ini)</p>
-            <p className="text-2xl font-black text-slate-800">342</p>
+            <p className="text-2xl font-black text-slate-800">{stats.totalSurat.toLocaleString('id-ID')}</p>
             <div className="mt-1 h-1 bg-blue-100 rounded-full overflow-hidden">
               <div className="w-[75%] h-full bg-blue-500"></div>
             </div>
           </div>
           <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">SKBN Terbit</p>
-            <p className="text-2xl font-black text-slate-800">12</p>
-            <p className="text-[10px] text-slate-500 mt-1">Dalam proses laboratorium</p>
+            <p className="text-2xl font-black text-slate-800">{stats.skbn.toLocaleString('id-ID')}</p>
+            <p className="text-[10px] text-slate-500 mt-1">Total riwayat diterbitkan</p>
           </div>
           <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm bg-blue-600">
              <p className="text-[10px] font-bold text-blue-100 uppercase tracking-widest">Validasi QR Code</p>
-             <p className="text-2xl font-black text-white">1,204</p>
+             <p className="text-2xl font-black text-white">{stats.validasi.toLocaleString('id-ID')}</p>
              <p className="text-[10px] text-blue-200 mt-1 italic">Total dokumen terverifikasi</p>
           </div>
         </div>

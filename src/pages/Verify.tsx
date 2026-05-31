@@ -13,8 +13,6 @@ export default function Verify() {
 
   useEffect(() => {
     async function verifyDoc() {
-      // In a real app we fetch this from Supabase.
-      // Since this is a demo without actual DB seeded, we simulate a success fallback if it fails standard fetch
       try {
         const { data: dbData, error } = await supabase
           .from('surat_keterangan')
@@ -35,20 +33,9 @@ export default function Verify() {
         }
         setData(dbData);
       } catch (e) {
-        // Fallback for simulation demo since DB might be empty
-        console.log("Using simulated data for demo purposes since Supabase fetch failed:", e);
-        setData({
-          id,
-          nomor_surat: '440/123/413.111/2026',
-          jenis_surat: 'SKI',
-          tanggal_terbit: new Date().toISOString(),
-          pasien: { nama: 'Simulasi Pasien', nik: '3511111111111111' },
-          tenaga_medis: { nama_lengkap: 'dr. R.M. Ustadho' },
-          data_klinis: {
-            diagnosa: 'Gejala Typus / Ispa',
-            lama_hari: 3
-          }
-        });
+        // Doc not found or other error
+        console.error("Dokumen tidak ditemukan:", e);
+        setData(null);
       } finally {
         setLoading(false);
       }

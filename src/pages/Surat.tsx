@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { generateNomorSurat } from '@/lib/nomorSurat';
+import { supabase } from '@/lib/supabase';
 
 // PDF Generator dependencies
 import { pdf } from '@react-pdf/renderer';
@@ -248,31 +249,85 @@ export default function FormSurat() {
       const { no_urut, nomor_surat_full } = await generateNomorSurat(currentSuratType);
       
       // 2. In a real app we'd upsert patient data to supabase here if it's new
-      // const { data: pData } = await supabase.from('pasien').upsert(patient).select().single();
+      let patientId = patient.id;
+      
+      const patientPayload = {
+        nik: patient.nik || null,
+        nama: patient.nama || 'Tanpa Nama',
+        tempat_lahir: patient.tempat_lahir || null,
+        tanggal_lahir: patient.tanggal_lahir || null,
+        jenis_kelamin: patient.jenis_kelamin || 'Laki-laki',
+        agama: patient.agama || null,
+        pekerjaan: patient.pekerjaan || null,
+        alamat: patient.alamat || null,
+        no_hp: patient.no_hp || null,
+        golongan_darah: patient.golongan_darah || null
+      };
+
+      if (patientId) {
+        // Update existing patient
+        const { error: pError } = await supabase.from('pasien').update(patientPayload).eq('id', patientId);
+        if (pError) {
+           console.error('Error updating patient:', pError);
+           throw new Error(`Gagal memperbarui data pasien: ${pError.message}`);
+        }
+      } else {
+        // Find if patient exists by NIK just in case (only if NIK is provided)
+        let existPatient = null;
+        if (patient.nik) {
+           const { data } = await supabase.from('pasien').select('id').eq('nik', patient.nik).maybeSingle();
+           existPatient = data;
+        }
+        
+        if (existPatient) {
+           patientId = existPatient.id;
+           const { error: pError } = await supabase.from('pasien').update(patientPayload).eq('id', patientId);
+           if (pError) throw new Error(`Gagal memperbarui data pasien: ${pError.message}`);
+        } else {
+           // Insert new patient
+           const { data: pData, error: pError } = await supabase.from('pasien').insert(patientPayload).select().single();
+           if (pError) {
+             console.error('Error inserting patient:', pError);
+             throw new Error(`Gagal menyimpan data pasien baru: ${pError.message}`);
+           }
+           patientId = pData.id;
+        }
+      }
       
       // 3. Insert surat_keterangan
-      // const suratData = { 
-      //    jenis_surat: currentSuratType, 
-      //    pasien_id: pData.id, 
-      //    data_klinis: dataKlinis, 
-      //    nomor_surat: nomor_surat_full, 
-      //    no_urut: no_urut, 
-      //    nomor_surat_full: nomor_surat_full 
-      // }
-      // await supabase.from('surat_keterangan').insert(suratData)
+      const suratData = { 
+         jenis_surat: currentSuratType, 
+         pasien_id: patientId, 
+         data_klinis: dataKlinis, 
+         nomor_surat: nomor_surat_full, 
+         no_urut: no_urut, 
+         nomor_surat_full: nomor_surat_full,
+         // We do not have login sessions hooked up fully to get tenaga_medis id,
+         // for now we lookup dr. R.M. Ustadho if possible, or null
+      };
+
+      // Try looking up the doctor
+      const { data: drData } = await supabase.from('tenaga_medis').select('id').ilike('nama_lengkap', '%Ustadho%').maybeSingle();
+      if (drData) {
+        (suratData as any).dokter_pemeriksa_id = drData.id;
+      }
+
+      const { data: sData, error: sError } = await supabase.from('surat_keterangan').insert(suratData).select().single();
+      
+      if (sError) {
+         console.error('Error inserting surat:', sError);
+         throw new Error('Gagal menyimpan surat keterangan ke database.');
+      }
 
       // 4. Generate PDF internally for printing
-      // We simulate an inserted ID for the QR code verification URL
-      const fakeSuratId = crypto.randomUUID();
-      
-      const doc = <SuratPDF suratType={currentSuratType} patient={patient} dataKlinis={dataKlinis} suratId={fakeSuratId} nomorSuratFull={nomor_surat_full} />;
+      const doc = <SuratPDF suratType={currentSuratType} patient={{...patient, id: patientId}} dataKlinis={dataKlinis} suratId={sData.id} nomorSuratFull={nomor_surat_full} />;
       const blob = await pdf(doc).toBlob();
       
       setGeneratedPdfBlob(blob);
       
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Gagal menyimpan data");
+      alert(err.message || "Gagal menyimpan data");
     } finally {
       setIsSaving(false);
     }
@@ -324,9 +379,22 @@ export default function FormSurat() {
                       <Input type="date" value={patient?.tanggal_lahir || ''} onChange={(e) => setPatient(prev => ({...prev, tanggal_lahir: e.target.value} as any))} className="bg-slate-50 border-slate-300" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs font-bold text-slate-600 uppercase">Pekerjaan</Label>
-                    <Input value={patient?.pekerjaan || ''} onChange={(e) => setPatient(prev => ({...prev, pekerjaan: e.target.value} as any))} className="bg-slate-50 border-slate-300" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold text-slate-600 uppercase">Jenis Kelamin</Label>
+                      <select 
+                        className="flex h-10 w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        value={patient?.jenis_kelamin || 'Laki-laki'}
+                        onChange={(e) => setPatient(prev => ({...prev, jenis_kelamin: e.target.value} as any))}
+                      >
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold text-slate-600 uppercase">Pekerjaan</Label>
+                      <Input value={patient?.pekerjaan || ''} onChange={(e) => setPatient(prev => ({...prev, pekerjaan: e.target.value} as any))} className="bg-slate-50 border-slate-300" />
+                    </div>
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label className="text-xs font-bold text-slate-600 uppercase">Alamat Lengkap</Label>
