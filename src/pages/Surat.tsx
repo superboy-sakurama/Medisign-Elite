@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Save, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,31 @@ export default function FormSurat() {
   };
 
   const currentSuratType = jenis_surat?.toUpperCase() || '';
+
+  const [suratHistory, setSuratHistory] = useState<any[]>([]);
+  const [editingSuratId, setEditingSuratId] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      if (!patient?.id) {
+        setSuratHistory([]);
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .from('surat_keterangan')
+          .select('*')
+          .eq('pasien_id', patient.id)
+          .eq('jenis_surat', currentSuratType)
+          .order('tanggal_terbit', { ascending: false });
+        
+        if (data) setSuratHistory(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchHistory();
+  }, [patient?.id, currentSuratType]);
 
   const renderDiagnosticForm = () => {
     switch (currentSuratType) {
@@ -294,23 +319,40 @@ export default function FormSurat() {
         }
       }
       
-      // 3. Insert surat_keterangan
-      const suratData = { 
-         jenis_surat: currentSuratType.toUpperCase(), 
-         pasien_id: patientId, 
-         data_klinis: dataKlinis, 
-         nomor_surat: nomor_surat_full
-         // We do not have login sessions hooked up fully to get tenaga_medis id,
-         // for now we lookup dr. R.M. Ustadho if possible, or null
-      };
-
-      // Try looking up the doctor
-      const { data: drData } = await supabase.from('tenaga_medis').select('id').ilike('nama_lengkap', '%Ustadho%').maybeSingle();
-      if (drData) {
-        (suratData as any).dokter_pemeriksa_id = drData.id;
+      let sData, sError;
+      let finalNomorSurat = nomor_surat_full;
+      
+      if (editingSuratId) {
+        // If editing, only update specific fields, do not change nomor surat or terbit
+        const { data, error } = await supabase.from('surat_keterangan')
+           .update({ data_klinis: dataKlinis })
+           .eq('id', editingSuratId)
+           .select()
+           .single();
+        sData = data;
+        sError = error;
+        finalNomorSurat = sData?.nomor_surat || finalNomorSurat;
+      } else {
+        // 3. Insert surat_keterangan
+        const suratData = { 
+           jenis_surat: currentSuratType.toUpperCase(), 
+           pasien_id: patientId, 
+           data_klinis: dataKlinis, 
+           nomor_surat: nomor_surat_full
+           // We do not have login sessions hooked up fully to get tenaga_medis id,
+           // for now we lookup dr. R.M. Ustadho if possible, or null
+        };
+  
+        // Try looking up the doctor
+        const { data: drData } = await supabase.from('tenaga_medis').select('id').ilike('nama_lengkap', '%Ustadho%').maybeSingle();
+        if (drData) {
+          (suratData as any).dokter_pemeriksa_id = drData.id;
+        }
+  
+        const { data, error } = await supabase.from('surat_keterangan').insert(suratData).select().single();
+        sData = data;
+        sError = error;
       }
-
-      const { data: sData, error: sError } = await supabase.from('surat_keterangan').insert(suratData).select().single();
       
       if (sError) {
          console.error('Error inserting surat:', sError);
@@ -318,7 +360,7 @@ export default function FormSurat() {
       }
 
       // 4. Generate PDF internally for printing
-      const doc = <SuratPDF suratType={currentSuratType} patient={{...patient, id: patientId}} dataKlinis={dataKlinis} suratId={sData.id} nomorSuratFull={nomor_surat_full} />;
+      const doc = <SuratPDF suratType={currentSuratType} patient={{...patient, id: patientId}} dataKlinis={dataKlinis} suratId={sData.id} nomorSuratFull={finalNomorSurat} />;
       const blob = await pdf(doc).toBlob();
       
       setGeneratedPdfBlob(blob);
@@ -349,7 +391,57 @@ export default function FormSurat() {
       
       <div className="flex-1 p-8 space-y-6 overflow-y-auto bg-slate-50">
         <div className="max-w-4xl mx-auto space-y-6">
-          <PatientSearch onPatientSelect={handlePatientSelect} />
+          <PatientSearch onPatientSelect={(p) => {
+            handlePatientSelect(p);
+            setEditingSuratId(null);
+            setDataKlinis({});
+          }} />
+
+          {suratHistory.length > 0 && (
+            <Card className="bg-amber-50 border-amber-200 shadow-sm rounded-xl">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-bold text-amber-800">Riwayat {currentSuratType} Pasien Ini</CardTitle>
+                <CardDescription className="text-xs text-amber-700">Pasien ini sudah pernah membuat {currentSuratType}. Anda dapat mengedit data riwayat jika ada kesalahan ketik.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {suratHistory.map((riwayat) => (
+                   <div key={riwayat.id} className="flex flex-col sm:flex-row items-center justify-between bg-white p-3 rounded-lg border border-amber-100 shadow-sm gap-4">
+                     <div>
+                       <p className="text-xs font-bold text-slate-800">{riwayat.nomor_surat}</p>
+                       <p className="text-[10px] text-slate-500">{new Date(riwayat.tanggal_terbit).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                     </div>
+                     <div className="flex gap-2">
+                       <button 
+                         onClick={() => {
+                           setDataKlinis(riwayat.data_klinis);
+                           setEditingSuratId(riwayat.id);
+                           setGeneratedPdfBlob(null);
+                           window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                         }} 
+                         className={`px-3 py-1.5 text-xs font-semibold rounded-md border ${editingSuratId === riwayat.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100'}`}
+                       >
+                         {editingSuratId === riwayat.id ? 'Sedang Edit' : 'Edit Data'}
+                       </button>
+                       <button 
+                         onClick={async () => {
+                           try {
+                             const doc = <SuratPDF suratType={currentSuratType} patient={{...patient, id: patient?.id}} dataKlinis={riwayat.data_klinis} suratId={riwayat.id} nomorSuratFull={riwayat.nomor_surat} />;
+                             const blob = await pdf(doc).toBlob();
+                             window.open(URL.createObjectURL(blob), '_blank');
+                           } catch (err) {
+                             console.error(err);
+                           }
+                         }} 
+                         className="px-3 py-1.5 text-xs font-semibold bg-white text-slate-700 rounded-md border border-slate-200 hover:bg-slate-50 shadow-sm"
+                       >
+                         Cetak Ulang
+                       </button>
+                     </div>
+                   </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Patient Identity Form - Pre-filled if patient found, editable if new */}
           <Card className="bg-white border-slate-200 shadow-sm rounded-xl">
