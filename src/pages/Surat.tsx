@@ -357,8 +357,7 @@ export default function FormSurat() {
            jenis_surat: currentSuratType.toUpperCase(), 
            pasien_id: patientId, 
            data_klinis: dataKlinis, 
-           nomor_surat: finalNomorSurat,
-           no_urut: no_urut
+           nomor_surat: finalNomorSurat
            // We do not have login sessions hooked up fully to get tenaga_medis id,
            // for now we lookup dr. R.M. Ustadho if possible, or null
         };

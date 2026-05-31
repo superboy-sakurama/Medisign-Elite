@@ -5,24 +5,31 @@ export async function generateNomorSurat(jenisSurat: string): Promise<{ no_urut:
     const currentYear = new Date().getFullYear();
     const currentYearStr = currentYear.toString();
     
-    // Cek tabel surat_keterangan untuk mendapatkan angka no_urut tertinggi pada tahun berjalan
+    // Cek tabel surat_keterangan untuk mendapatkan nomor surat terakhir pada tahun berjalan
     const { data, error } = await supabase
       .from('surat_keterangan')
-      .select('no_urut')
+      .select('nomor_surat')
       .gte('tanggal_terbit', `${currentYear}-01-01`)
       .lte('tanggal_terbit', `${currentYear}-12-31`)
-      .order('no_urut', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 
     if (error && error.code !== 'PGRST116') {
-      console.error('Error fetching latest no_urut:', error);
+      console.error('Error fetching latest nomor_surat:', error);
     }
 
     // Jika belum ada set 1, jika ada MAX + 1
     let nextNoUrut = 1;
-    if (data && data.no_urut) {
-      nextNoUrut = data.no_urut + 1;
+    if (data && data.nomor_surat) {
+      // Format baku: 400.7.22.1 / [nomor_urut_5_digit] / [jenis_surat] / 413.102.5.8 / [tahun_berjalan]
+       const parts = data.nomor_surat.split('/');
+       if (parts.length > 1) {
+          const urut = parseInt(parts[1], 10);
+          if (!isNaN(urut)) {
+             nextNoUrut = urut + 1;
+          }
+       }
     }
 
     // Format menjadi 5 digit padStart 
