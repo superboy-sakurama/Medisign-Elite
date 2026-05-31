@@ -6,6 +6,7 @@ import { PatientSearch, PatientData } from '@/components/PatientSearch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { generateNomorSurat } from '@/lib/nomorSurat';
 
 // PDF Generator dependencies
 import { pdf } from '@react-pdf/renderer';
@@ -132,19 +133,28 @@ export default function FormSurat() {
 
     setIsSaving(true);
     try {
-      // 1. In a real app we'd upsert patient data to supabase here if it's new
+      // 1. Generate Nomor Surat
+      const { no_urut, nomor_surat_full } = await generateNomorSurat(currentSuratType);
+      
+      // 2. In a real app we'd upsert patient data to supabase here if it's new
       // const { data: pData } = await supabase.from('pasien').upsert(patient).select().single();
       
-      // 2. Insert surat_keterangan
-      // const suratData = { jenis_surat: currentSuratType, pasien_id: pData.id, data_klinis: dataKlinis, nomor_surat: ... }
+      // 3. Insert surat_keterangan
+      // const suratData = { 
+      //    jenis_surat: currentSuratType, 
+      //    pasien_id: pData.id, 
+      //    data_klinis: dataKlinis, 
+      //    nomor_surat: nomor_surat_full, 
+      //    no_urut: no_urut, 
+      //    nomor_surat_full: nomor_surat_full 
+      // }
       // await supabase.from('surat_keterangan').insert(suratData)
 
-      // 3. Generate PDF internally for printing
+      // 4. Generate PDF internally for printing
       // We simulate an inserted ID for the QR code verification URL
       const fakeSuratId = crypto.randomUUID();
-      const fakeNomorSurat = `440/${Math.floor(Math.random() * 1000)}/413.111/${new Date().getFullYear()}`;
       
-      const doc = <SuratPDF suratType={currentSuratType} patient={patient} dataKlinis={dataKlinis} suratId={fakeSuratId} nomorSurat={fakeNomorSurat} />;
+      const doc = <SuratPDF suratType={currentSuratType} patient={patient} dataKlinis={dataKlinis} suratId={fakeSuratId} nomorSuratFull={nomor_surat_full} />;
       const blob = await pdf(doc).toBlob();
       
       setGeneratedPdfBlob(blob);

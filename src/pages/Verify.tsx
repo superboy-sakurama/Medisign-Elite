@@ -43,7 +43,11 @@ export default function Verify() {
           jenis_surat: 'SKI',
           tanggal_terbit: new Date().toISOString(),
           pasien: { nama: 'Simulasi Pasien', nik: '3511111111111111' },
-          tenaga_medis: { nama_lengkap: 'dr. R.M. Ustadho' }
+          tenaga_medis: { nama_lengkap: 'dr. R.M. Ustadho' },
+          data_klinis: {
+            diagnosa: 'Gejala Typus / Ispa',
+            lama_hari: 3
+          }
         });
       } finally {
         setLoading(false);
@@ -105,20 +109,33 @@ export default function Verify() {
               </div>
               <div className="flex justify-between border-b pb-2">
                 <dt className="text-slate-500">Nama Pasien</dt>
-                <dd className="font-semibold">{data.pasien.nama}</dd>
+                <dd className="font-semibold text-right">{data.pasien.nama}</dd>
               </div>
+              {data.data_klinis?.keperluan && (
+                <div className="flex justify-between border-b pb-2">
+                  <dt className="text-slate-500">Keperluan</dt>
+                  <dd className="font-semibold text-right">{data.data_klinis.keperluan}</dd>
+                </div>
+              )}
+              {data.data_klinis?.diagnosa && (
+                <div className="flex justify-between border-b pb-2">
+                  <dt className="text-slate-500">Diagnosa</dt>
+                  <dd className="font-semibold text-right">{data.data_klinis.diagnosa}</dd>
+                </div>
+              )}
+              {data.data_klinis?.kesimpulan && (
+                <div className="flex justify-between border-b pb-2">
+                  <dt className="text-slate-500">Kesimpulan</dt>
+                  <dd className="font-semibold text-right">{data.data_klinis.kesimpulan}</dd>
+                </div>
+              )}
               <div className="flex justify-between border-b pb-2">
                 <dt className="text-slate-500">Tanda Tangan</dt>
-                <dd className="font-semibold">{data.tenaga_medis?.nama_lengkap}</dd>
+                <dd className="font-semibold text-right">{data.tenaga_medis?.nama_lengkap}</dd>
               </div>
             </dl>
           </CardContent>
         )}
-        <div className="p-4 text-center">
-          <Link to="/login">
-            <Button variant="outline" className="w-full">Ke Halaman Login Petugas</Button>
-          </Link>
-        </div>
       </Card>
     </div>
   );

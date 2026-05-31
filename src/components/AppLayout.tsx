@@ -17,7 +17,7 @@ export default function AppLayout() {
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </div>
             <div className="text-white overflow-hidden">
-              <h1 className="text-xs font-bold tracking-widest uppercase opacity-60 truncate">SI-SUKET MEDIS</h1>
+              <h1 className="text-xs font-bold tracking-widest uppercase opacity-60 truncate">MediSign Elite</h1>
               <p className="text-[10px] text-slate-400 truncate">Puskesmas Kalitengah</p>
             </div>
           </div>

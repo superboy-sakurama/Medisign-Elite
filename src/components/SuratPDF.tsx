@@ -8,6 +8,10 @@ import { PatientData } from './PatientSearch';
 // OR we could just simulate it. Here we use an API that returns an image.
 const getQrCodeUrl = (url: string) => `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
 
+// Logo assets
+const logoPemkab = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Lambang_Kabupaten_Lamongan.png/300px-Lambang_Kabupaten_Lamongan.png';
+const logoPuskesmas = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Logo_Bakti_Husada.svg/300px-Logo_Bakti_Husada.svg.png';
+
 const styles = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica', fontSize: 11 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
@@ -36,10 +40,10 @@ interface SuratPDFProps {
   patient: PatientData;
   dataKlinis: any;
   suratId: string;
-  nomorSurat: string;
+  nomorSuratFull: string;
 }
 
-export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSurat }: SuratPDFProps) => {
+export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFull }: SuratPDFProps) => {
   const verifyUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/${suratId}`;
   const qrCodeImg = getQrCodeUrl(verifyUrl);
 
@@ -48,9 +52,9 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSurat }
       <Page size="A4" style={styles.page}>
         {/* KOP SURAT */}
         <View style={styles.header}>
-          {/* Logo Kiri - Placeholder */}
-          <View style={{ width: 60, height: 70, backgroundColor: '#eee', justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{fontSize: 8}}>Logo Pemkab</Text>
+          {/* Logo Kiri */}
+          <View style={{ width: 60, height: 75, justifyContent: 'center', alignItems: 'center' }}>
+            <Image src={logoPemkab} style={{ width: 55, height: 65, objectFit: 'contain' }} />
           </View>
           
           <View style={styles.headerTextContainer}>
@@ -61,9 +65,9 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSurat }
             <Text style={styles.headerAddress}>Email: pkmkalitengah@lamongankab.go.id</Text>
           </View>
 
-          {/* Logo Kanan - Placeholder */}
-          <View style={{ width: 60, height: 70, backgroundColor: '#eee', justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{fontSize: 8}}>Bakti Husada</Text>
+          {/* Logo Kanan */}
+          <View style={{ width: 60, height: 75, justifyContent: 'center', alignItems: 'center' }}>
+             <Image src={logoPuskesmas} style={{ width: 55, height: 65, objectFit: 'contain' }} />
           </View>
         </View>
 
@@ -72,11 +76,16 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSurat }
 
         {/* JUDUL SURAT */}
         <Text style={styles.suratTitle}>
-          {suratType === 'SKI' ? 'SURAT KETERANGAN ISTIRAHAT' : 
+          {suratType === 'SKD' ? 'SURAT KETERANGAN DOKTER (SKD)' : 
+           suratType === 'SKI' ? 'SURAT KETERANGAN ISTIRAHAT' : 
            suratType === 'SKBN' ? 'SURAT KETERANGAN BEBAS NARKOBA' : 
+           suratType === 'SKB' ? 'SURAT KETERANGAN BEROBAT' :
+           suratType === 'SKH' ? 'SURAT KETERANGAN HAMIL' :
+           suratType === 'SKSH' ? 'SURAT KETERANGAN SEHAT HAJI' :
+           suratType === 'SKV' ? 'SURAT KETERANGAN VAKSIN' :
            `SURAT KETERANGAN ${suratType}`}
         </Text>
-        <Text style={styles.suratNumber}>Nomor: {nomorSurat}</Text>
+        <Text style={styles.suratNumber}>Nomor: {nomorSuratFull}</Text>
 
         <Text style={{ marginBottom: 10 }}>Yang bertanda tangan di bawah ini menerangkan bahwa:</Text>
         
