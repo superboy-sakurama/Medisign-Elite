@@ -32,7 +32,7 @@ CREATE TABLE tenaga_medis (
 -- Insert Data Dummy Tenaga Medis
 INSERT INTO tenaga_medis (nama_lengkap, nip, no_sip, jabatan) VALUES
 ('dr. Sesanti', '198001012005012001', '503/123/SIP.Dr/413.111/2020', 'Kepala Puskesmas'),
-('dr. R.M. Ustadho', '198502022010021002', '503/124/SIP.Dr/413.111/2021', 'Dokter Pemeriksa'),
+('dr. R.M. Ustadho', '198205062014121001', 'SIP-DU1028/SIP.DU/413.111/V/2022', 'Dokter Pemeriksa'),
 ('dr. Muhammad Machfud', '199003032015031003', '503/125/SIP.Dr/413.111/2022', 'Dokter Pemeriksa');
 
 -- 3. TABEL surat_keterangan
