@@ -24,6 +24,7 @@ export default function FormSurat() {
   // For saving simulation
   const [isSaving, setIsSaving] = useState(false);
   const [generatedPdfBlob, setGeneratedPdfBlob] = useState<Blob | null>(null);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const handlePatientSelect = (p: PatientData | null) => {
     setPatient(p);
@@ -364,6 +365,8 @@ export default function FormSurat() {
       const blob = await pdf(doc).toBlob();
       
       setGeneratedPdfBlob(blob);
+      setSuccessMsg(editingSuratId ? "Data riwayat berhasil diperbarui!" : "Data surat berhasil disimpan!");
+      setTimeout(() => setSuccessMsg(''), 5000);
       
     } catch (err: any) {
       console.error(err);
@@ -391,6 +394,13 @@ export default function FormSurat() {
       
       <div className="flex-1 p-8 space-y-6 overflow-y-auto bg-slate-50">
         <div className="max-w-4xl mx-auto space-y-6">
+          {successMsg && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg relative flex items-center shadow-sm">
+              <svg className="w-5 h-5 text-emerald-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+              <span className="text-sm font-bold">{successMsg}</span>
+            </div>
+          )}
+
           <PatientSearch onPatientSelect={(p) => {
             handlePatientSelect(p);
             setEditingSuratId(null);

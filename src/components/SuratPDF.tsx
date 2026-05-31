@@ -1,6 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { PatientData } from './PatientSearch';
+import { logoPemkab, logoPuskesmas } from '../lib/logos';
 
 // Function to generate Base64 QR code since React-PDF Image component requires a URL/Base64
 // We'll generate it client side using qrcode.react in the UI, but for PDF we can use a service or pre-generate it.
@@ -8,18 +9,15 @@ import { PatientData } from './PatientSearch';
 // OR we could just simulate it. Here we use an API that returns an image.
 const getQrCodeUrl = (url: string) => `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
 
-// Logo assets
-const logoPemkab = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Lambang_Kabupaten_Lamongan.png/300px-Lambang_Kabupaten_Lamongan.png';
-const logoPuskesmas = 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Logo_Bakti_Husada.svg/300px-Logo_Bakti_Husada.svg.png';
-
 const styles = StyleSheet.create({
   page: { padding: 40, fontFamily: 'Helvetica', fontSize: 11 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
-  headerTextContainer: { alignItems: 'center', flex: 1 },
-  headerTitle: { fontSize: 14, fontWeight: 'bold' },
-  headerSubtitle: { fontSize: 16, fontWeight: 'bold', marginVertical: 3 },
-  headerAddress: { fontSize: 10 },
+  headerTextContainer: { alignItems: 'center', flex: 1, paddingHorizontal: 10 },
+  headerTitle: { fontSize: 14, fontWeight: 'bold', textAlign: 'center' },
+  headerSubtitle: { fontSize: 16, fontWeight: 'bold', marginVertical: 3, textAlign: 'center' },
+  headerAddress: { fontSize: 10, textAlign: 'center' },
   divider: { borderBottomWidth: 2, borderBottomColor: '#000', marginBottom: 2, marginTop: 10 },
+
   dividerThin: { borderBottomWidth: 1, borderBottomColor: '#000', marginBottom: 20 },
   suratTitle: { textAlign: 'center', fontSize: 14, fontWeight: 'bold', textDecoration: 'underline' },
   suratNumber: { textAlign: 'center', marginBottom: 20 },
@@ -302,7 +300,7 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
         )}
 
         {/* TANDA TANGAN & QR */}
-        <View style={{...styles.signatureSection, marginTop: suratType === 'SKB' ? -80 : (suratType === 'SKD' ? -80 : 40)}}>
+        <View style={styles.signatureSection}>
           <View style={{ width: 150 }}>
              {/* QR Code Verification */}
              <Text style={{fontSize: 8, marginBottom: 4}}>Scan untuk verifikasi keaslian dokumen:</Text>
