@@ -11,7 +11,7 @@ export async function generateNomorSurat(jenisSurat: string): Promise<{ no_urut:
       .select('nomor_surat')
       .gte('tanggal_terbit', `${currentYear}-01-01`)
       .lte('tanggal_terbit', `${currentYear}-12-31`)
-      .order('created_at', { ascending: false })
+      .order('tanggal_terbit', { ascending: false })
       .limit(1)
       .maybeSingle();
 
