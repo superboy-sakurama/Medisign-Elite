@@ -59,8 +59,9 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
             <Text style={styles.headerTitle}>PEMERINTAH KABUPATEN LAMONGAN</Text>
             <Text style={styles.headerTitle}>DINAS KESEHATAN</Text>
             <Text style={styles.headerSubtitle}>PUSKESMAS KALITENGAH</Text>
-            <Text style={styles.headerAddress}>Jl. Mahkota No. 100 Desa Dibee Kalitengah Lamongan Telp. 0322-391971</Text>
-            <Text style={styles.headerAddress}>Email: puskes.kalitengah@gmail.com Web : https://lamongankab.go.id/puskesmas-kalitengah</Text>
+            <Text style={styles.headerAddress}>Jl. Mahkota No. 100 Desa Dibee Kalitengah Lamongan 62255</Text>
+            <Text style={styles.headerAddress}>Telp. 0322-391971 Email: puskes.kalitengah@gmail.com</Text>
+            <Text style={styles.headerAddress}>Web : https://lamongankab.go.id/puskesmas-kalitengah</Text>
           </View>
 
           {/* Logo Kanan */}
