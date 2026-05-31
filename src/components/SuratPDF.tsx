@@ -1,7 +1,8 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { PatientData } from './PatientSearch';
-import { logoPemkab, logoPuskesmas } from '../lib/logos';
+import logoPemkab from '../lib/logo.pemkab.png';
+import logoPuskesmas from '../lib/logo.puskesmas.png';
 
 // Function to generate Base64 QR code since React-PDF Image component requires a URL/Base64
 // We'll generate it client side using qrcode.react in the UI, but for PDF we can use a service or pre-generate it.
@@ -204,19 +205,19 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
         )}
 
          {suratType === 'SKV' && (
-          <View>
-            <Text style={styles.paragraph}>
+          <View style={{ fontSize: 9 }}>
+            <Text style={{ marginTop: 5, marginBottom: 5, lineHeight: 1.2, textAlign: 'justify' }}>
               Yang bersangkutan <Text style={{fontWeight: 'bold'}}>SUDAH</Text> melakukan vaksinasi akan tetapi ada kendala pada aplikasi SATU SEHAT sehingga sertifikat belum muncul berikut tanggal vaksinasi :
             </Text>
             
-            <View style={{ display: 'flex', flexDirection: 'column', border: '1 solid #000', marginTop: 10, marginBottom: 10 }}>
-               <View style={{ display: 'flex', flexDirection: 'row', borderBottom: '1 solid #000', padding: 5 }}>
+            <View style={{ display: 'flex', flexDirection: 'column', border: '1 solid #000', marginTop: 5, marginBottom: 5 }}>
+               <View style={{ display: 'flex', flexDirection: 'row', borderBottom: '1 solid #000', padding: 3 }}>
                  <Text style={{ flex: 1, textAlign: 'center' }}>Dosis</Text>
                  <Text style={{ flex: 2, textAlign: 'center', borderLeft: '1 solid #000', borderRight: '1 solid #000' }}>Tanggal Vaksin</Text>
                  <Text style={{ flex: 2, textAlign: 'center' }}>No. Batch Vaksin</Text>
                </View>
                {[1, 2, 3].map((dosis) => (
-                  <View key={dosis} style={{ display: 'flex', flexDirection: 'row', padding: 5, borderBottom: dosis === 3 ? 'none' : '1 solid #000' }}>
+                  <View key={dosis} style={{ display: 'flex', flexDirection: 'row', padding: 3, borderBottom: dosis === 3 ? 'none' : '1 solid #000' }}>
                     <Text style={{ flex: 1, textAlign: 'center' }}>Dosis {dosis === 1 ? 'I' : dosis === 2 ? 'II' : 'III'}</Text>
                     <Text style={{ flex: 2, textAlign: 'center', borderLeft: '1 solid #000', borderRight: '1 solid #000', fontWeight: 'bold' }}>
                       {dataKlinis[`tgl_vaksin_${dosis}`] ? new Date(dataKlinis[`tgl_vaksin_${dosis}`]).toLocaleDateString('id-ID') : ''}
@@ -226,8 +227,8 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
                ))}
             </View>
 
-            <Text style={styles.paragraph}>Surat Keterangan ini bukan sertifikat Vaksin ataupun sebagai pengganti sertifikat vaksin.</Text>
-            <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat dengan sesungguhnya dan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya sampai dengan Etiket vaksin muncul di aplikasi Satu Sehat.</Text>
+            <Text style={{ marginTop: 5, marginBottom: 5, lineHeight: 1.2, textAlign: 'justify' }}>Surat Keterangan ini bukan sertifikat Vaksin ataupun sebagai pengganti sertifikat vaksin.</Text>
+            <Text style={{ marginTop: 5, marginBottom: 5, lineHeight: 1.2, textAlign: 'justify' }}>Demikian surat keterangan ini dibuat dengan sesungguhnya dan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya sampai dengan Etiket vaksin muncul di aplikasi Satu Sehat.</Text>
           </View>
         )}
 
@@ -272,7 +273,7 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
         )}
 
         {/* TANDA TANGAN & QR & KETERANGAN */}
-        <View style={styles.signatureSection}>
+        <View style={{...styles.signatureSection, marginTop: suratType === 'SKV' ? 10 : 40}}>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             {suratType === 'SKD' && (
               <View style={{ flex: 1 }}>
