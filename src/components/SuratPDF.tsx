@@ -56,8 +56,8 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
         {/* KOP SURAT */}
         <View style={styles.header}>
           {/* Logo Kiri */}
-          <View style={{ width: 90, height: 105, justifyContent: 'center', alignItems: 'center' }}>
-            <Image src={logoPemkab} style={{ width: 85, height: 95, objectFit: 'contain' }} />
+          <View style={{ width: 100, height: 100, justifyContent: 'center', alignItems: 'center' }}>
+            <Image src={logoPemkab} style={{ width: 95, height: 95, objectFit: 'contain' }} />
           </View>
           
           <View style={styles.headerTextContainer}>
@@ -70,8 +70,8 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
           </View>
 
           {/* Logo Kanan */}
-          <View style={{ width: 90, height: 105, justifyContent: 'center', alignItems: 'center' }}>
-             <Image src={logoPuskesmas} style={{ width: 85, height: 95, objectFit: 'contain' }} />
+          <View style={{ width: 100, height: 100, justifyContent: 'center', alignItems: 'center' }}>
+             <Image src={logoPuskesmas} style={{ width: 95, height: 95, objectFit: 'contain' }} />
           </View>
         </View>
 
