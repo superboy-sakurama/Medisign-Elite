@@ -46,14 +46,18 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
   const verifyUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/verify/${suratId}`;
   const qrCodeImg = getQrCodeUrl(verifyUrl);
 
+  const pageStyle = suratType === 'SKV' 
+    ? { ...styles.page, fontSize: 10, padding: 30 }
+    : styles.page;
+
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={pageStyle}>
         {/* KOP SURAT */}
         <View style={styles.header}>
           {/* Logo Kiri */}
-          <View style={{ width: 70, height: 85, justifyContent: 'center', alignItems: 'center' }}>
-            <Image src={logoPemkab} style={{ width: 65, height: 80, objectFit: 'contain' }} />
+          <View style={{ width: 90, height: 105, justifyContent: 'center', alignItems: 'center' }}>
+            <Image src={logoPemkab} style={{ width: 85, height: 95, objectFit: 'contain' }} />
           </View>
           
           <View style={styles.headerTextContainer}>
@@ -66,8 +70,8 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
           </View>
 
           {/* Logo Kanan */}
-          <View style={{ width: 70, height: 85, justifyContent: 'center', alignItems: 'center' }}>
-             <Image src={logoPuskesmas} style={{ width: 65, height: 80, objectFit: 'contain' }} />
+          <View style={{ width: 90, height: 105, justifyContent: 'center', alignItems: 'center' }}>
+             <Image src={logoPuskesmas} style={{ width: 85, height: 95, objectFit: 'contain' }} />
           </View>
         </View>
 
@@ -316,7 +320,7 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
           <View style={styles.signatureBlock}>
             <Text>Kalitengah, {new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})}</Text>
             <Text>{suratType === 'SKV' ? 'Kepala Puskesmas Kalitengah' : 'Dokter Pemeriksa,'}</Text>
-            <Text style={styles.signatureName}>dr. R.M. Ustadho</Text>
+            <Text style={{ ...styles.signatureName, marginTop: suratType === 'SKV' ? 40 : 60 }}>dr. R.M. Ustadho</Text>
             <Text style={styles.signatureNip}>NIP. 19820506 201412 1 001</Text>
             <Text style={{ marginTop: 2 }}>No SIP-DU1028/SIP.DU/413.111/V/2022</Text>
           </View>
