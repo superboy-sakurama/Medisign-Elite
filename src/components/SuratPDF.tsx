@@ -50,6 +50,23 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
     ? { ...styles.page, fontSize: 10, padding: 30 }
     : styles.page;
 
+  const parseYear = (dateString?: string) => {
+     if (!dateString) return null;
+     const d = new Date(dateString);
+     if (!isNaN(d.getTime())) return d.getFullYear();
+     const parts = dateString.split(/[-/ \.]/);
+     if (parts.length >= 3) {
+        let possibleYear = parseInt(parts[2]);
+        if (possibleYear > 1900 && possibleYear < 2100) return possibleYear;
+        possibleYear = parseInt(parts[0]);
+        if (possibleYear > 1900 && possibleYear < 2100) return possibleYear;
+     }
+     return null;
+  };
+
+  const birthYear = parseYear(patient.tanggal_lahir);
+  const calculatedAge = birthYear ? `${new Date().getFullYear() - birthYear} tahun` : '-';
+
   return (
     <Document>
       <Page size="A4" style={pageStyle}>
@@ -113,9 +130,7 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
             <Text style={styles.label}>{suratType === 'SKSH' ? 'Tempat, Tgl Lahir' : suratType === 'SKV' ? 'Tanggal Lahir' : 'Umur'}</Text><Text style={styles.colon}>:</Text>
             <Text style={styles.value}>
                {suratType === 'SKSH' ? `${patient.tempat_lahir}, ${patient.tanggal_lahir}` : 
-                suratType === 'SKV' ? patient.tanggal_lahir :
-                /* Simulate Age calculation roughly for other forms */
-                patient.tanggal_lahir ? `${new Date().getFullYear() - new Date(patient.tanggal_lahir).getFullYear()} tahun` : '-'}
+                suratType === 'SKV' ? patient.tanggal_lahir : calculatedAge}
             </Text>
           </View>
           {suratType !== 'SKV' && (

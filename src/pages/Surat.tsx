@@ -26,6 +26,8 @@ export default function FormSurat() {
   const [generatedPdfBlob, setGeneratedPdfBlob] = useState<Blob | null>(null);
   const [successMsg, setSuccessMsg] = useState("");
 
+  const [nomorUrutOverride, setNomorUrutOverride] = useState('');
+
   const handlePatientSelect = (p: PatientData | null) => {
     setPatient(p);
   };
@@ -349,7 +351,7 @@ export default function FormSurat() {
         finalNomorSurat = sData?.nomor_surat;
       } else {
         // 2. Generate Nomor Surat
-        const { no_urut, nomor_surat_full } = await generateNomorSurat(currentSuratType);
+        const { no_urut, nomor_surat_full } = await generateNomorSurat(currentSuratType, nomorUrutOverride);
         finalNomorSurat = nomor_surat_full;
 
         // 3. Insert surat_keterangan
@@ -473,9 +475,22 @@ export default function FormSurat() {
 
           {/* Patient Identity Form - Pre-filled if patient found, editable if new */}
           <Card className="bg-white border-slate-200 shadow-sm rounded-xl">
-            <CardHeader className="border-b border-slate-100 pb-4">
-              <CardTitle className="text-sm font-bold text-slate-800">Identitas Pasien</CardTitle>
-              <CardDescription className="text-xs text-slate-400">Data demografis pasien terintegrasi NIK.</CardDescription>
+            <CardHeader className="border-b border-slate-100 pb-4 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-sm font-bold text-slate-800">Identitas Pasien</CardTitle>
+                <CardDescription className="text-xs text-slate-400">Data demografis pasien terintegrasi NIK.</CardDescription>
+              </div>
+              <div className="flex flex-col space-y-1 w-48">
+                 <Label className="text-[10px] font-bold text-slate-500">SET NOMOR URUT (OPSIONAL)</Label>
+                 <Input 
+                    type="number"
+                    value={nomorUrutOverride}
+                    onChange={(e) => setNomorUrutOverride(e.target.value)}
+                    className="h-8 text-xs bg-slate-50 border-slate-300"
+                    placeholder="Contoh: 1050"
+                    title="Kosongkan agar otomatis melanjutkan urutan terakhir"
+                 />
+              </div>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -494,7 +509,7 @@ export default function FormSurat() {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs font-bold text-slate-600 uppercase">Tgl Lahir</Label>
-                      <Input type="date" value={patient?.tanggal_lahir || ''} onChange={(e) => setPatient(prev => ({...prev, tanggal_lahir: e.target.value} as any))} className="bg-slate-50 border-slate-300" />
+                      <Input type="text" placeholder="DD-MM-YYYY" value={patient?.tanggal_lahir || ''} onChange={(e) => setPatient(prev => ({...prev, tanggal_lahir: e.target.value} as any))} className="bg-slate-50 border-slate-300" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
