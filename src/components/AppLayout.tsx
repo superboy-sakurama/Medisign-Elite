@@ -55,6 +55,12 @@ export default function AppLayout() {
             >
               <span className="w-5 text-center">📊</span> Dashboard Terpadu
             </button>
+            <button
+               onClick={() => navigate('/history')}
+               className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium ${location.pathname === '/history' ? 'bg-blue-600/10 text-blue-400 border-l-4 border-blue-500' : 'text-slate-400 border-l-4 border-transparent hover:bg-slate-800 hover:text-white'}`}
+            >
+              <span className="w-5 text-center">⏱️</span> Riwayat Entry
+            </button>
           </div>
         </nav>
         <div className="p-4 border-t border-slate-800 bg-slate-900/50">

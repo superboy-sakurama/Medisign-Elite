@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, Save, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PatientSearch, PatientData } from '@/components/PatientSearch';
@@ -73,8 +73,37 @@ export default function FormSurat() {
     updatePreview();
   }, [currentSuratType, nomorUrutOverride]);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const editIdParam = searchParams.get('edit_id');
+
   const [suratHistory, setSuratHistory] = useState<any[]>([]);
   const [editingSuratId, setEditingSuratId] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadEditData() {
+      if (editIdParam) {
+        setEditingSuratId(editIdParam);
+        try {
+          const { data, error } = await supabase
+            .from('surat_keterangan')
+            .select('*, pasien(*)')
+            .eq('id', editIdParam)
+            .single();
+            
+          if (data && !error) {
+            setDataKlinis(data.data_klinis);
+            if (data.pasien) {
+               data.pasien.tanggal_lahir = formatDateFromDB(data.pasien.tanggal_lahir);
+               setPatient(data.pasien);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to load edit data", err);
+        }
+      }
+    }
+    loadEditData();
+  }, [editIdParam]);
 
   useEffect(() => {
     async function fetchHistory() {

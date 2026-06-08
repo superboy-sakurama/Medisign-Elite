@@ -20,7 +20,7 @@ const suratTypes = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ totalPasien: 0, totalSurat: 0, skbn: 0, validasi: 0 });
+  const [stats, setStats] = useState({ totalPasien: 0, totalSurat: 0, skbn: 0, validasi: 0, totalSuratAll: 0, suratCounts: {} as Record<string, number> });
   
   useEffect(() => {
     async function fetchStats() {
@@ -35,15 +35,19 @@ export default function Dashboard() {
           .select('*', { count: 'exact', head: true })
           .gte('tanggal_terbit', currentMonthStart.toISOString());
           
-        const { count: countSKBN } = await supabase.from('surat_keterangan')
-          .select('*', { count: 'exact', head: true })
-          .eq('jenis_surat', 'SKBN');
+        const { data: countsData } = await supabase.from('surat_keterangan').select('jenis_surat');
 
         setStats({
           totalPasien: countPasien || 0,
           totalSurat: countSuratBulanIni || 0,
           skbn: countSKBN || 0,
-          validasi: countSurat || 0
+          validasi: countSurat || 0,
+          totalSuratAll: countSurat || 0,
+          suratCounts: (countsData || []).reduce((acc: any, curr: any) => {
+            const type = curr.jenis_surat.toLowerCase();
+            acc[type] = (acc[type] || 0) + 1;
+            return acc;
+          }, {})
         });
       } catch (err) {
         console.error('Error fetching stats', err);
@@ -80,14 +84,14 @@ export default function Dashboard() {
               <div className="w-[75%] h-full bg-blue-500"></div>
             </div>
           </div>
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">SKBN Terbit</p>
-            <p className="text-2xl font-black text-slate-800">{stats.skbn.toLocaleString('id-ID')}</p>
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm hover:shadow-md transition-all">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Surat Terbit</p>
+            <p className="text-2xl font-black text-slate-800">{stats.totalSuratAll.toLocaleString('id-ID')}</p>
             <p className="text-[10px] text-slate-500 mt-1">Total riwayat diterbitkan</p>
           </div>
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm bg-blue-600">
-             <p className="text-[10px] font-bold text-blue-100 uppercase tracking-widest">Validasi QR Code</p>
-             <p className="text-2xl font-black text-white">{stats.validasi.toLocaleString('id-ID')}</p>
+          <div className="bg-blue-600 border border-blue-500 p-4 rounded-xl shadow-sm hover:shadow-md transition-all">
+             <p className="text-[10px] font-bold text-blue-100 uppercase tracking-widest text-shadow">VALIDASI QR CODE</p>
+             <p className="text-2xl font-black text-white drop-shadow-md">{stats.validasi.toLocaleString('id-ID')}</p>
              <p className="text-[10px] text-blue-200 mt-1 italic">Total dokumen terverifikasi</p>
           </div>
         </div>
@@ -101,8 +105,13 @@ export default function Dashboard() {
               {suratTypes.map((type) => (
                 <div key={type.id} onClick={() => navigate(`/surat/${type.id}`)} className="cursor-pointer bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-blue-500 hover:shadow-md transition-all flex flex-col h-full group">
                   <div className="flex items-start gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 flex flex-col items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors">
-                      <span className="text-lg group-hover:grayscale group-hover:brightness-200">{type.icon}</span>
+                    <div className="flex flex-col items-center">
+                      <div className="w-10 h-10 rounded-lg bg-blue-50 flex flex-col items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors relative">
+                        <span className="text-lg group-hover:grayscale group-hover:brightness-200">{type.icon}</span>
+                      </div>
+                      <div className="mt-2 text-[10px] font-bold px-2 py-0.5 bg-slate-100 rounded text-slate-600 group-hover:bg-blue-100 group-hover:text-blue-700">
+                        {stats.suratCounts[type.id] || 0} Dibuat
+                      </div>
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-slate-800">{type.label}</h4>
