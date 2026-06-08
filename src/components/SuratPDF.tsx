@@ -292,52 +292,60 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
         )}
 
         {/* TANDA TANGAN & QR & KETERANGAN */}
-        <View style={{...styles.signatureSection, marginTop: suratType === 'SKV' ? 10 : 40}}>
-          <View style={{ flex: 1, flexDirection: 'row' }}>
-            {suratType === 'SKD' && (
-              <View style={{ flex: 1 }}>
-                <Text>Keterangan :</Text>
-                <View style={{...styles.contentRow, marginTop: 5}}>
-                  <Text style={{width: 60}}>Tinggi badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.tinggi_badan || '-'}</Text><Text style={{marginLeft: 5}}>cm</Text>
-                </View>
-                <View style={styles.contentRow}>
-                  <Text style={{width: 60}}>Berat badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.berat_badan || '-'}</Text><Text style={{marginLeft: 5}}>kg</Text>
-                </View>
-                <View style={styles.contentRow}>
-                  <Text style={{width: 60}}>Tensi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.tensi || '-'}</Text><Text style={{marginLeft: 5}}>mm/Hg</Text>
-                </View>
-                <View style={styles.contentRow}>
-                  <Text style={{width: 60}}>Suhu</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.suhu || '-'}</Text><Text style={{marginLeft: 5}}>°C</Text>
-                </View>
-                <View style={styles.contentRow}>
-                  <Text style={{width: 60}}>Nadi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.nadi || '-'}</Text><Text style={{marginLeft: 5}}>x/menit</Text>
-                </View>
-                <View style={styles.contentRow}>
-                  <Text style={{width: 60}}>GDA</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.gda || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
-                </View>
-                <View style={styles.contentRow}>
-                  <Text style={{width: 60}}>Chol</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.chol || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
-                </View>
-                <View style={styles.contentRow}>
-                  <Text style={{width: 60}}>Trigliserida</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.trigliserida || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
-                </View>
-                <Text style={{fontSize: 9, fontStyle: 'italic', marginTop: 5}}>Keterangan: (*) Coret yang tidak perlu</Text>
+        <View style={{...styles.signatureSection, marginTop: suratType === 'SKV' ? 10 : 40, alignItems: 'flex-start'}}>
+          {suratType === 'SKD' ? (
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text>Keterangan :</Text>
+              <View style={{...styles.contentRow, marginTop: 5}}>
+                <Text style={{width: 60}}>Tinggi badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.tinggi_badan || '-'}</Text><Text style={{marginLeft: 5}}>cm</Text>
               </View>
-            )}
-            
-            <View style={{ width: 100, marginLeft: suratType === 'SKD' ? 10 : 0 }}>
-               {/* QR Code Verification */}
-               <Text style={{fontSize: 8, marginBottom: 4}}>Scan untuk verifikasi keaslian dokumen:</Text>
-               <Image src={qrCodeImg} style={styles.qrContainer} />
+              <View style={styles.contentRow}>
+                <Text style={{width: 60}}>Berat badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.berat_badan || '-'}</Text><Text style={{marginLeft: 5}}>kg</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 60}}>Tensi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.tensi || '-'}</Text><Text style={{marginLeft: 5}}>mm/Hg</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 60}}>Suhu</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.suhu || '-'}</Text><Text style={{marginLeft: 5}}>°C</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 60}}>Nadi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.nadi || '-'}</Text><Text style={{marginLeft: 5}}>x/menit</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 60}}>GDA</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.gda || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 60}}>Chol</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.chol || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
+              </View>
+              <View style={styles.contentRow}>
+                <Text style={{width: 60}}>Trigliserida</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.trigliserida || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
+              </View>
+              <Text style={{fontSize: 9, fontStyle: 'italic', marginTop: 5}}>Keterangan: (*) Coret yang tidak perlu</Text>
             </View>
+          ) : suratType === 'SKI' ? (
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={{fontWeight: 'bold', textDecoration: 'underline'}}>Resep / Terapy:</Text>
+              <Text style={{fontSize: 10, lineHeight: 1.5, marginTop: 5}}>{dataKlinis.terapy?.replace(/\n/g, '\n') || '-'}</Text>
+            </View>
+          ) : (
+            <View style={{ flex: 1 }} />
+          )}
+          
+          <View style={{ width: 120, alignItems: 'center' }}>
+             {/* QR Code Verification */}
+             <Text style={{fontSize: 8, marginBottom: 4, textAlign: 'center'}}>Scan untuk</Text>
+             <Text style={{fontSize: 8, marginBottom: 4, textAlign: 'center'}}>verifikasi keaslian:</Text>
+             <Image src={qrCodeImg} style={styles.qrContainer} />
           </View>
 
-          <View style={styles.signatureBlock}>
-            <Text>Kalitengah, {new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})}</Text>
-            <Text>{suratType === 'SKV' ? 'Kepala Puskesmas Kalitengah' : 'Dokter Pemeriksa,'}</Text>
-            <Text style={{ ...styles.signatureName, marginTop: suratType === 'SKV' ? 40 : 60 }}>dr. R.M. Ustadho</Text>
-            <Text style={styles.signatureNip}>NIP. 19820506 201412 1 001</Text>
-            <Text style={{ marginTop: 2 }}>No SIP-DU1028/SIP.DU/413.111/V/2022</Text>
+          <View style={{ flex: 1, alignItems: 'flex-end' }}>
+            <View style={styles.signatureBlock}>
+              <Text>Kalitengah, {new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})}</Text>
+              <Text>{suratType === 'SKV' ? 'Kepala Puskesmas Kalitengah' : 'Dokter Pemeriksa,'}</Text>
+              <Text style={{ ...styles.signatureName, marginTop: suratType === 'SKV' ? 40 : 60 }}>dr. R.M. Ustadho</Text>
+              <Text style={styles.signatureNip}>NIP. 19820506 201412 1 001</Text>
+              <Text style={{ marginTop: 2 }}>No SIP-DU1028/SIP.DU/413.111/V/2022</Text>
+            </View>
           </View>
         </View>
 

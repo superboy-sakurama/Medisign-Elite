@@ -20,7 +20,7 @@ export async function generateNomorSurat(jenisSurat: string, overrideNomor?: str
         .select('nomor_surat, created_at')
         .gte('tanggal_terbit', `${currentYear}-01-01`)
         .lte('tanggal_terbit', `${currentYear}-12-31`)
-        .order('created_at', { ascending: false })
+        .order('nomor_surat', { ascending: false })
         .limit(1)
         .maybeSingle();
 

@@ -13,6 +13,28 @@ import { supabase } from '@/lib/supabase';
 import { pdf } from '@react-pdf/renderer';
 import { SuratPDF } from '@/components/SuratPDF';
 
+// Helper for parsing DD-MM-YYYY to YYYY-MM-DD for DB
+function parseDateToDBFormat(dateStr: string | null | undefined): string | null {
+  if (!dateStr) return null;
+  const parts = dateStr.split(/[-/]/);
+  if (parts.length === 3) {
+    if (parts[0].length <= 2 && parts[2].length === 4) {
+      return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+  }
+  return dateStr;
+}
+
+// Helper for formatting YYYY-MM-DD from DB to DD-MM-YYYY
+function formatDateFromDB(dateStr: string | null | undefined): string {
+  if (!dateStr) return '';
+  const parts = dateStr.split(/[-T ]/); // Handle potential timestamp suffixes just in case
+  if (parts.length >= 3 && parts[0].length === 4) {
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  return dateStr;
+}
+
 export default function FormSurat() {
   const { jenis_surat } = useParams<{ jenis_surat: string }>();
   const navigate = useNavigate();
@@ -27,8 +49,14 @@ export default function FormSurat() {
   const [successMsg, setSuccessMsg] = useState("");
 
   const [nomorUrutOverride, setNomorUrutOverride] = useState('');
+  const [liveNomorPreview, setLiveNomorPreview] = useState('');
+
+  const currentSuratType = jenis_surat?.toUpperCase() || '';
 
   const handlePatientSelect = (p: PatientData | null) => {
+    if (p && p.tanggal_lahir) {
+      p.tanggal_lahir = formatDateFromDB(p.tanggal_lahir);
+    }
     setPatient(p);
   };
 
@@ -36,7 +64,14 @@ export default function FormSurat() {
     setDataKlinis({ ...dataKlinis, [e.target.name]: e.target.value });
   };
 
-  const currentSuratType = jenis_surat?.toUpperCase() || '';
+  // Fetch a live preview when override or type changes
+  useEffect(() => {
+    async function updatePreview() {
+       const { nomor_surat_full } = await generateNomorSurat(currentSuratType, nomorUrutOverride);
+       setLiveNomorPreview(nomor_surat_full);
+    }
+    updatePreview();
+  }, [currentSuratType, nomorUrutOverride]);
 
   const [suratHistory, setSuratHistory] = useState<any[]>([]);
   const [editingSuratId, setEditingSuratId] = useState<string | null>(null);
@@ -280,7 +315,7 @@ export default function FormSurat() {
         nik: patient.nik || null,
         nama: patient.nama || 'Tanpa Nama',
         tempat_lahir: patient.tempat_lahir || null,
-        tanggal_lahir: patient.tanggal_lahir || null,
+        tanggal_lahir: parseDateToDBFormat(patient.tanggal_lahir),
         jenis_kelamin: patient.jenis_kelamin || 'Laki-laki',
         agama: patient.agama || null,
         pekerjaan: patient.pekerjaan || null,
@@ -386,6 +421,7 @@ export default function FormSurat() {
       
       setGeneratedPdfBlob(blob);
       setSuccessMsg(editingSuratId ? "Data riwayat berhasil diperbarui!" : "Data surat berhasil disimpan!");
+      setNomorUrutOverride(""); // Clear override so the next letter increments automatically
       setTimeout(() => setSuccessMsg(''), 5000);
       
     } catch (err: any) {
@@ -480,16 +516,17 @@ export default function FormSurat() {
                 <CardTitle className="text-sm font-bold text-slate-800">Identitas Pasien</CardTitle>
                 <CardDescription className="text-xs text-slate-400">Data demografis pasien terintegrasi NIK.</CardDescription>
               </div>
-              <div className="flex flex-col space-y-1 w-48">
+              <div className="flex flex-col space-y-1 w-64 text-right">
                  <Label className="text-[10px] font-bold text-slate-500">SET NOMOR URUT (OPSIONAL)</Label>
                  <Input 
                     type="number"
                     value={nomorUrutOverride}
                     onChange={(e) => setNomorUrutOverride(e.target.value)}
-                    className="h-8 text-xs bg-slate-50 border-slate-300"
+                    className="h-8 text-xs bg-slate-50 border-slate-300 ml-auto w-32"
                     placeholder="Contoh: 1050"
                     title="Kosongkan agar otomatis melanjutkan urutan terakhir"
                  />
+                 <p className="text-[10px] text-slate-400 truncate" title={liveNomorPreview}>{liveNomorPreview || 'Loading nomor...'}</p>
               </div>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
