@@ -40,7 +40,7 @@ export default function Dashboard() {
         setStats({
           totalPasien: countPasien || 0,
           totalSurat: countSuratBulanIni || 0,
-          skbn: countSKBN || 0,
+          skbn: 0,
           validasi: countSurat || 0,
           totalSuratAll: countSurat || 0,
           suratCounts: (countsData || []).reduce((acc: any, curr: any) => {
