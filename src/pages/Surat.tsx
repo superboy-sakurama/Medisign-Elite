@@ -260,7 +260,7 @@ export default function FormSurat() {
              </div>
              <div className="space-y-2 mt-4">
                <Label>Kesimpulan Pemeriksaan</Label>
-               <Input name="kesimpulan" value={dataKlinis.kesimpulan || ''} placeholder="Dalam keadaan SEHAT untuk melangsungkan pernikahan" onChange={handleClinicalChange} />
+               <Input name="kesimpulan" value={dataKlinis.kesimpulan || ''} placeholder="SEHAT/TIDAK SEHAT." onChange={handleClinicalChange} />
              </div>
           </div>
         );

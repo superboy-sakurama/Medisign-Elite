@@ -265,7 +265,7 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
         {suratType === 'CATIN' && (
            <View>
             <Text style={styles.paragraph}>
-              Bahwa pada pemeriksaan Kesehatan saat ini, orang tersebut dalam : <Text style={{fontWeight: 'bold'}}>{dataKlinis.kesimpulan || '...'}</Text>.
+              Bahwa pada pemeriksaan Kesehatan saat ini, orang tersebut dalam keadaan : <Text style={{fontWeight: 'bold'}}>{dataKlinis.kesimpulan || '...'}</Text>.
             </Text>
              <Text style={styles.paragraph}>Surat keterangan ini akan dipergunakan sebagai persyaratan untuk : <Text style={{fontWeight: 'bold', textDecoration: 'underline'}}>CALON MEMPELAI</Text></Text>
              <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat dipergunakan seperlunya.</Text>
