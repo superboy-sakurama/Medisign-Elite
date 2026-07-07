@@ -265,8 +265,9 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
         {suratType === 'CATIN' && (
            <View>
             <Text style={styles.paragraph}>
-              Berdasarkan hasil pemeriksaan medis, pasien tersebut dinyatakan : <Text style={{fontWeight: 'bold'}}>{dataKlinis.kesimpulan || '...'}</Text>.
+              Bahwa pada pemeriksaan Kesehatan saat ini, orang tersebut dalam : <Text style={{fontWeight: 'bold'}}>{dataKlinis.kesimpulan || '...'}</Text>.
             </Text>
+             <Text style={styles.paragraph}>Surat keterangan ini akan dipergunakan sebagai persyaratan untuk : <Text style={{fontWeight: 'bold', textDecoration: 'underline'}}>CALON MEMPELAI</Text></Text>
              <Text style={styles.paragraph}>Demikian surat keterangan ini dibuat untuk dapat dipergunakan seperlunya.</Text>
           </View>
         )}
@@ -293,34 +294,58 @@ export const SuratPDF = ({ suratType, patient, dataKlinis, suratId, nomorSuratFu
 
         {/* TANDA TANGAN & QR & KETERANGAN */}
         <View style={{...styles.signatureSection, marginTop: suratType === 'SKV' ? 10 : 40, alignItems: 'flex-start'}}>
-          {suratType === 'SKD' ? (
+          {suratType === 'SKD' || suratType === 'CATIN' ? (
             <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text>Keterangan :</Text>
+              <Text style={{fontWeight: 'bold', textDecoration: 'underline'}}>Keterangan :</Text>
               <View style={{...styles.contentRow, marginTop: 5}}>
-                <Text style={{width: 60}}>Tinggi badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.tinggi_badan || '-'}</Text><Text style={{marginLeft: 5}}>cm</Text>
+                <Text style={{width: 70}}>Tinggi Badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.tinggi_badan || '-'}</Text><Text style={{marginLeft: 0}}>cm</Text>
               </View>
               <View style={styles.contentRow}>
-                <Text style={{width: 60}}>Berat badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.berat_badan || '-'}</Text><Text style={{marginLeft: 5}}>kg</Text>
+                <Text style={{width: 70}}>Berat Badan</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.berat_badan || '-'}</Text><Text style={{marginLeft: 0}}>kg</Text>
               </View>
               <View style={styles.contentRow}>
-                <Text style={{width: 60}}>Tensi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.tensi || '-'}</Text><Text style={{marginLeft: 5}}>mm/Hg</Text>
+                <Text style={{width: 70}}>Tekanan Darah</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.tensi || '-'}</Text><Text style={{marginLeft: 0}}>mmHg</Text>
               </View>
               <View style={styles.contentRow}>
-                <Text style={{width: 60}}>Suhu</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.suhu || '-'}</Text><Text style={{marginLeft: 5}}>°C</Text>
+                <Text style={{width: 70}}>Suhu</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.suhu || '-'}</Text><Text style={{marginLeft: 0}}>°C</Text>
               </View>
               <View style={styles.contentRow}>
-                <Text style={{width: 60}}>Nadi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.nadi || '-'}</Text><Text style={{marginLeft: 5}}>x/menit</Text>
+                <Text style={{width: 70}}>Nadi</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.nadi || '-'}</Text><Text style={{marginLeft: 0}}>x/mnt</Text>
               </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 60}}>GDA</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.gda || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 60}}>Chol</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.chol || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
-              </View>
-              <View style={styles.contentRow}>
-                <Text style={{width: 60}}>Trigliserida</Text><Text style={{width: 5}}>:</Text><Text style={{width: 30, textAlign: 'right'}}>{dataKlinis.trigliserida || '-'}</Text><Text style={{marginLeft: 5}}>mg/dl</Text>
-              </View>
-              <Text style={{fontSize: 9, fontStyle: 'italic', marginTop: 5}}>Keterangan: (*) Coret yang tidak perlu</Text>
+              {suratType === 'SKD' && (
+                <>
+                  <View style={styles.contentRow}>
+                    <Text style={{width: 70}}>GDA</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.gda || '-'}</Text><Text style={{marginLeft: 0}}>mg/dl</Text>
+                  </View>
+                  <View style={styles.contentRow}>
+                    <Text style={{width: 70}}>Chol</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.chol || '-'}</Text><Text style={{marginLeft: 0}}>mg/dl</Text>
+                  </View>
+                  <View style={styles.contentRow}>
+                    <Text style={{width: 70}}>Trigliserida</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.trigliserida || '-'}</Text><Text style={{marginLeft: 0}}>mg/dl</Text>
+                  </View>
+                </>
+              )}
+              {suratType === 'CATIN' && (
+                <>
+                  <View style={styles.contentRow}>
+                    <Text style={{width: 70}}>LILA</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.lila || '-'}</Text><Text style={{marginLeft: 0}}>cm</Text>
+                  </View>
+                  <View style={styles.contentRow}>
+                    <Text style={{width: 70}}>IMT</Text><Text style={{width: 5}}>:</Text><Text style={{width: 40, textAlign: 'left'}}>{dataKlinis.imt || '-'}</Text><Text style={{marginLeft: 0}}></Text>
+                  </View>
+                  <View style={{...styles.contentRow, marginTop: 10}}>
+                    <Text style={{width: 70}}>Gol. Darah</Text><Text style={{width: 5}}>:</Text><Text style={{flex: 1, textAlign: 'left'}}>{dataKlinis.golongan_darah || '-'}</Text>
+                  </View>
+                  <View style={styles.contentRow}>
+                    <Text style={{width: 70}}>PP Test</Text><Text style={{width: 5}}>:</Text><Text style={{flex: 1, textAlign: 'left'}}>{dataKlinis.pp_test || '-'}</Text>
+                  </View>
+                  <View style={styles.contentRow}>
+                    <Text style={{width: 70}}>HB</Text><Text style={{width: 5}}>:</Text><Text style={{flex: 1, textAlign: 'left'}}>{dataKlinis.hb || '-'}</Text>
+                  </View>
+                </>
+              )}
+              <Text style={{fontSize: 9, fontStyle: 'italic', marginTop: 10}}>Keterangan:</Text>
+              <Text style={{fontSize: 9, fontStyle: 'italic'}}>(*) Coret yang tidak perlu</Text>
             </View>
           ) : suratType === 'SKI' ? (
             <View style={{ flex: 1, paddingRight: 10 }}>

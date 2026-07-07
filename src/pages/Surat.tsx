@@ -61,7 +61,22 @@ export default function FormSurat() {
   };
 
   const handleClinicalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setDataKlinis({ ...dataKlinis, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const newData = { ...dataKlinis, [name]: value };
+
+    // Auto calculate IMT if tinggi_badan or berat_badan changes
+    if (name === 'tinggi_badan' || name === 'berat_badan') {
+      const height = parseFloat(newData.tinggi_badan);
+      const weight = parseFloat(newData.berat_badan);
+      if (!isNaN(height) && height > 0 && !isNaN(weight)) {
+        const heightM = height / 100;
+        newData.imt = (weight / (heightM * heightM)).toFixed(2);
+      } else {
+        newData.imt = '';
+      }
+    }
+    
+    setDataKlinis(newData);
   };
 
   // Fetch a live preview when override or type changes
@@ -229,14 +244,23 @@ export default function FormSurat() {
         return (
           <div className="space-y-4">
              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="space-y-2"><Label>Tinggi Badan (cm)</Label><Input type="number" name="tinggi_badan" onChange={handleClinicalChange} /></div>
-                <div className="space-y-2"><Label>Berat Badan (kg)</Label><Input type="number" name="berat_badan" onChange={handleClinicalChange} /></div>
-                <div className="space-y-2"><Label>Tensi (mmHg)</Label><Input name="tensi" onChange={handleClinicalChange} /></div>
-                <div className="space-y-2"><Label>Suhu (°C)</Label><Input name="suhu" onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Tinggi Badan (cm)</Label><Input type="number" name="tinggi_badan" value={dataKlinis.tinggi_badan || ''} onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Berat Badan (kg)</Label><Input type="number" name="berat_badan" value={dataKlinis.berat_badan || ''} onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Tensi (mmHg)</Label><Input name="tensi" value={dataKlinis.tensi || ''} onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Suhu (°C)</Label><Input name="suhu" value={dataKlinis.suhu || ''} onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>Nadi (x/mnt)</Label><Input name="nadi" value={dataKlinis.nadi || ''} onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>LILA (cm)</Label><Input type="number" name="lila" value={dataKlinis.lila || ''} onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>IMT</Label><Input name="imt" value={dataKlinis.imt || ''} readOnly className="bg-slate-50" /></div>
+             </div>
+             <Label className="text-base font-semibold mt-4 mb-2 block border-b pb-2">Pemeriksaan Laboratorium</Label>
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2"><Label>Golongan Darah</Label><Input name="golongan_darah" value={dataKlinis.golongan_darah || ''} onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>PP Test</Label><Input name="pp_test" value={dataKlinis.pp_test || ''} onChange={handleClinicalChange} /></div>
+                <div className="space-y-2"><Label>HB</Label><Input name="hb" value={dataKlinis.hb || ''} onChange={handleClinicalChange} /></div>
              </div>
              <div className="space-y-2 mt-4">
                <Label>Kesimpulan Pemeriksaan</Label>
-               <Input name="kesimpulan" placeholder="Dalam keadaan SEHAT untuk melangsungkan pernikahan" onChange={handleClinicalChange} />
+               <Input name="kesimpulan" value={dataKlinis.kesimpulan || ''} placeholder="Dalam keadaan SEHAT untuk melangsungkan pernikahan" onChange={handleClinicalChange} />
              </div>
           </div>
         );

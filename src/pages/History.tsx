@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Edit2, Printer, Trash2 } from 'lucide-react';
+import { Edit2, Printer, Trash2, Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { pdf } from '@react-pdf/renderer';
 import { SuratPDF } from '@/components/SuratPDF';
@@ -10,21 +10,67 @@ import { SuratPDF } from '@/components/SuratPDF';
 export default function History() {
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  const fetchHistory = async () => {
+  const fetchHistory = async (search: string = '') => {
+    setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('surat_keterangan')
-        .select(`
-          *,
-          pasien (*)
-        `)
-        .order('created_at', { ascending: false })
-        .limit(30);
+      if (search.trim()) {
+        const queryTerm = search.trim();
+        // First find patients whose name or NIK matches the query
+        const { data: matchedPatients, error: pError } = await supabase
+          .from('pasien')
+          .select('id')
+          .or(`nama.ilike.%${queryTerm}%,nik.ilike.%${queryTerm}%`);
 
-      if (error) throw error;
-      setHistory(data || []);
+        if (pError) throw pError;
+
+        const patientIds = matchedPatients?.map(p => p.id) || [];
+
+        if (patientIds.length > 0) {
+          // If patients found, query matching letters
+          const { data, error } = await supabase
+            .from('surat_keterangan')
+            .select(`
+              *,
+              pasien (*)
+            `)
+            .or(`nomor_surat.ilike.%${queryTerm}%,jenis_surat.ilike.%${queryTerm}%,pasien_id.in.(${patientIds.join(',')})`)
+            .order('created_at', { ascending: false })
+            .limit(30);
+
+          if (error) throw error;
+          setHistory(data || []);
+        } else {
+          // No matching patients, query letters by other matching fields
+          const { data, error } = await supabase
+            .from('surat_keterangan')
+            .select(`
+              *,
+              pasien (*)
+            `)
+            .or(`nomor_surat.ilike.%${queryTerm}%,jenis_surat.ilike.%${queryTerm}%`)
+            .order('created_at', { ascending: false })
+            .limit(30);
+
+          if (error) throw error;
+          setHistory(data || []);
+        }
+      } else {
+        // Fetch default 30 records
+        const { data, error } = await supabase
+          .from('surat_keterangan')
+          .select(`
+            *,
+            pasien (*)
+          `)
+          .order('created_at', { ascending: false })
+          .limit(30);
+
+        if (error) throw error;
+        setHistory(data || []);
+      }
     } catch (err) {
       console.error('Error fetching history:', err);
     } finally {
@@ -35,6 +81,15 @@ export default function History() {
   useEffect(() => {
     fetchHistory();
   }, []);
+
+  const handleSearchSubmit = () => {
+    fetchHistory(searchQuery);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    fetchHistory('');
+  };
 
   const handleEdit = (row: any) => {
     navigate(`/surat/${row.jenis_surat.toLowerCase()}?edit_id=${row.id}`);
@@ -82,9 +137,43 @@ export default function History() {
 
       <div className="flex-1 p-8 overflow-y-auto bg-slate-50">
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-800">Riwayat Inputan Terakhir</h3>
-            <p className="text-xs text-slate-500">Menampilkan 30 surat terakhir yang dibuat</p>
+          <div className="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-800">Riwayat Inputan Terakhir</h3>
+              <p className="text-xs text-slate-500">Menampilkan 30 surat terakhir yang dibuat atau sesuai pencarian</p>
+            </div>
+            
+            <div className="flex items-center gap-2 max-w-md w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-80">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Cari Nama Pasien atau NIK..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearchSubmit();
+                    }
+                  }}
+                  className="pl-9 pr-8 h-9 w-full rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={handleClearSearch}
+                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={handleSearchSubmit}
+                className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors cursor-pointer"
+              >
+                Cari
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-600">
